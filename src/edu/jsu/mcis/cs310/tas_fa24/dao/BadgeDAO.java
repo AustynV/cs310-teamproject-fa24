@@ -75,4 +75,7 @@ public class BadgeDAO {
 
     }
 
+    public boolean create (Badge badge){
+        //Cayden
+    }
 }
