@@ -16,14 +16,20 @@ public class Punch {
     private final LocalDateTime originaltimestamp;
     private LocalDateTime adjustedtimestamp;
     private final EventTime punchtype;
-    priavte PunchAdjustmentType adjustmenttype;
+    private PunchAdjustmentType adjustmenttype;
     private LunchStatus adjustedlunchstatus;
     
     public enum LunchStatus {
         HAPPENING, HAPPENED, NOT_HAPPENING, INAPPLICABLE
     }
     
-    public Punch(){
+    public Punch(int id, int terminalId, Badge badge, LocalDateTime originaltimestamp, EventType punchtype){
+        this.id = id;
+        this.terminalId = terminalId;
+        this.badge = badge;
+        this.originaltimestamp = originaltimestamp;
+        this.punchtype = punchtype;
+        
         
     }
 }
