@@ -21,8 +21,8 @@ public class Punch {
     
     public enum LunchStatus {
         HAPPENING, HAPPENED, NOT_HAPPENING, INAPPLICABLE
-    }
     
+        
     public Punch(int id, int terminalId, Badge badge, LocalDateTime originaltimestamp, EventType punchtype){
         this.id = id;
         this.terminalId = terminalId;
