@@ -28,8 +28,25 @@ public class Punch {
         this.terminalId = terminalId;
         this.badge = badge;
         this.originaltimestamp = originaltimestamp;
-        this.punchtype = punchtype;
-        
-        
+        this.punchtype = punchtype;   
     }
+    
+    public int getid(){
+        return id;
+    }
+    
+    public int getTerminalid(){
+        return terminalId;
+    }
+    
+    public Badge getBadge(){
+        return badge;
+    }
+    
+    public EventType getPunchtype(){
+        return punchtype;
+    }
+    
+    
+    
 }
