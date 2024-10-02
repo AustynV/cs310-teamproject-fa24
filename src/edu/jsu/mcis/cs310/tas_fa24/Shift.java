@@ -4,10 +4,18 @@
  */
 package edu.jsu.mcis.cs310.tas_fa24;
 
+
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+
 /**
  *
  * @author catuc.
  */
 public class Shift {
+    private final String description;
+    private final int id, roundinterval, graceperiod, dockpenalty, lunchthreshold;
+    private final LocalTime shiftstart, shiftstop, lunchstart, lunchstop;
     
 }
