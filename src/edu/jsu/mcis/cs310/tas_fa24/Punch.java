@@ -21,7 +21,7 @@ public class Punch {
     
     public enum LunchStatus {
         HAPPENING, HAPPENED, NOT_HAPPENING, INAPPLICABLE
-    
+    }
         
     public Punch(int id, int terminalId, Badge badge, LocalDateTime originaltimestamp, EventType punchtype){
         this.id = id;
@@ -56,7 +56,7 @@ public class Punch {
     }
     
     public String printAdjusted (){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         String dateText = originaltimestamp.format(formatter);
         
         formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -72,7 +72,7 @@ public class Punch {
     }
     
     public String printOriginal(){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         String dateText = originaltimestamp.format(formatter);
         
         formatter = DateTimeFormatter.ofPattern("HH:mm:ss");

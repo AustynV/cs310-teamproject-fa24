@@ -17,5 +17,12 @@ public class Shift {
     private final String description;
     private final int id, roundinterval, graceperiod, dockpenalty, lunchthreshold;
     private final LocalTime shiftstart, shiftstop, lunchstart, lunchstop;
+    private int lunchDuration;
+    private int shiftDuration;
     
+    public Shift(HashMap<String, String> shiftParams){
+        this.id = Integer.parseInt(shiftParams.get("id"));
+        this.roundinterval = Integer.parseInt(shiftParams.get("rouninerval"));
+        this.graceperiod = 
+    }
 }
