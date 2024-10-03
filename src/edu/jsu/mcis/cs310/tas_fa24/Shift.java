@@ -17,12 +17,77 @@ public class Shift {
     private final String description;
     private final int id, roundinterval, graceperiod, dockpenalty, lunchthreshold;
     private final LocalTime shiftstart, shiftstop, lunchstart, lunchstop;
-    private int lunchDuration;
-    private int shiftDuration;
+    Private final int shiftduration, lunchduration;
     
-    public Shift(HashMap<String, String> shiftParams){
-        this.id = Integer.parseInt(shiftParams.get("id"));
-        this.roundinterval = Integer.parseInt(shiftParams.get("rouninerval"));
-        this.graceperiod = 
-    }
+}
+public shift(int id, String description, LocalTime shiftstart,LocalTime shiftstop,LocalTime lunchstart, LocalTime lunchstop, int roundintreval, iint graceperiod, int dockpenalty, int lunchthreshold)
+{
+	this.id = id;
+	this.description = description;
+	this.shiftstart = shiftstart;
+	this.shiftstop = shiftstop;
+	this.lunchstart = lunchstart;
+	this.lunchstop = lunchstop;
+	this.roundinterval = roundinterval;
+	this.graceperiod = graceperiod;
+	this.dockpenalty = dockpenalty;
+	this.lunchthreshold = lunchthreshold;
+	
+	
+	this.shiftduration = (int) ChronoUnit.MINUTES.between(shiftstart, shiftstop);
+	this.lunchduration = (int) ChronoUnit.MINUTES.between(lunchstart, lunchstop);
+}
+
+public int getId() {
+	return id;
+}
+public String getDescription() {
+	return description;
+}
+public LocalTime getShiftStart() {
+	return shiftstart;
+}
+public LocalTime getShiftStop() {
+	return shiftstop;
+}
+public LocalTime getLunchStart() {
+	return lunchstart;
+}
+public LocalTime getLunchStop() {
+	return lunchstop;
+}
+public int getRoundInterval() {
+	return roundinterval;
+}
+public int getGracePeriod() {
+	return graceperiod;
+}
+public int getDockPentalty() {
+	return dockpenalty;
+}
+public int getLunchThreshold() {
+	return lunchthreshold;
+}
+public int getShiftDuration() {
+	return shiftduration;
+}
+public int getLunchDuration() {
+	return lunchduration;
+}
+@Override
+public String toString() {
+	return "Shift ID: " + id + "\n" +
+"Description: " + description + "\n" +
+"Shift Start: " + shiftstart + "\n" +
+"Shift Stop: " + shiftstart + "\n" +
+"Lunch Start:" + lunchstart + "\n" +
+"Lunch Stop:"  + lunch stop + "\n" +
+"Shift Duration: " + shiftduration + "minutes\n" +
+"Lunch Duration: " + lunchduration + "minutes\n" +
+"Round Interval: " + roundinterval + "minutes\n" +
+"Grace Period: " + graceperiod + "minutes\n" +
+"Dock Penalty:" + dockpenalty + "minutes\n" +
+"Lunch Threshold:" + lunchthreshold + "minutes";
+	
+ }
 }
