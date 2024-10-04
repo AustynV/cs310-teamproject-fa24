@@ -111,4 +111,32 @@ public class BadgeDAO {
         }
         return inserted;
     }
+    
+    
+    public boolean delete(String id) {
+        int rowsAffected = 0;
+        
+        PreparedStatement ps = null;
+        
+        try {
+            
+            Connection conn = daoFactory.getConnection();
+            String QUERY_DELETE = null;
+            
+            ps = conn.prepareStatement(QUERY_DELETE);
+            ps.setString(1, id);
+            rowsAffected = ps.executeUpdate();
+        } catch (SQLException e){
+            throw new DAOException(e.getMessage());
+        } finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch(SQLException e){
+                    
+                }
+            }
+        }
+        return rowsAffected == 1;
+    }
 }
