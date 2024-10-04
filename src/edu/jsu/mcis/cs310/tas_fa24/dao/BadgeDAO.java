@@ -77,5 +77,66 @@ public class BadgeDAO {
 
     public boolean create (Badge badge){
         //Cayden
+        boolean inserted = false;
+        
+        PreparedStatement ps = null;
+        
+        try {
+            Connection conn = daoFactory.getConnection();
+            
+            if (conn.isValid(0)){
+                String QUERY_CREATE = null;
+                
+                ps = conn.prepareStatement(QUERY_CREATE);
+                ps.setString(1, badge.getId());
+                ps.setString(2,badge.getDescription());
+                
+                int updateCount = ps.executeUpdate();
+                
+                if (updateCount == 1){
+                    inserted = true;
+                }
+            }
+            
+        } catch (SQLException e){
+            throw new DAOException(e.getMessage());
+        } finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e){
+                    throw new DAOException(e.getMessage());
+                }
+            }
+        }
+        return inserted;
+    }
+    
+    
+    public boolean delete(String id) {
+        int rowsAffected = 0;
+        
+        PreparedStatement ps = null;
+        
+        try {
+            
+            Connection conn = daoFactory.getConnection();
+            String QUERY_DELETE = null;
+            
+            ps = conn.prepareStatement(QUERY_DELETE);
+            ps.setString(1, id);
+            rowsAffected = ps.executeUpdate();
+        } catch (SQLException e){
+            throw new DAOException(e.getMessage());
+        } finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch(SQLException e){
+                    
+                }
+            }
+        }
+        return rowsAffected == 1;
     }
 }

@@ -17,3 +17,5 @@ manifest.mf
 .externalNativeBuild
 .cxx
 local.properties
+/target/
+/bin/

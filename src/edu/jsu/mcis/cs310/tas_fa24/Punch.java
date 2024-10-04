@@ -21,7 +21,7 @@ public class Punch {
     
     public enum LunchStatus {
         HAPPENING, HAPPENED, NOT_HAPPENING, INAPPLICABLE
-    
+    }
         
     public Punch(int id, int terminalId, Badge badge, LocalDateTime originaltimestamp, EventType punchtype){
         this.id = id;
@@ -47,6 +47,44 @@ public class Punch {
         return punchtype;
     }
     
+    public LocalDateTime getOriginaltimestamp(){
+        return originaltimestamp;
+    }
     
+    public PunchAdjustmentType getAdjustmentType(){
+        return adjustedlunchstatus;
+    }
+    
+    public String printAdjusted (){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        String dateText = originaltimestamp.format(formatter);
+        
+        formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String timeText_two = adjustedtimestamp.format(formatter);
+        
+        String dayOfWeek = originaltimestamp.getDayOfWeek().toString().substring(0, 3).toUpperCase();
+        
+        StringBuilder s = new StringBuilder();
+        s.append("#").append(badge.getId()).append(" ");
+        s.append(punchtype).append(": ").append(dayOfWeek).append(" ").append(dateText).append(" ").append(timeText_two).append(" (").append(adjustmenttype).append(")");
+        
+        return s.toString();
+    }
+    
+    public String printOriginal(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        String dateText = originaltimestamp.format(formatter);
+        
+        formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String timeText_two = adjustedtimestamp.format(formatter);
+        
+        String dayOfWeek = originaltimestamp.getDayOfWeek().toString().substring(0, 3).toUpperCase();
+        
+        StringBuilder s = new StringBuilder();
+        s.append("#").append(badge.getId()).append(" ");
+        s.append(punchtype).append(": ").append(dayOfWeek).append(" ").append(dateText).append(" ").append(timeText_two).append(" (").append(adjustmenttype).append(")");
+        
+        return s.toString();
+    }
     
 }
