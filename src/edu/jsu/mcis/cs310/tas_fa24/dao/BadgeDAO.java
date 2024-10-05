@@ -74,11 +74,6 @@ public class BadgeDAO {
         return badge;
 
     }
-
-    public boolean create (Badge badge){
-        //Cayden
-        
-    }
     
     
     
