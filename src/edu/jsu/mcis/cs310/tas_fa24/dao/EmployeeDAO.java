@@ -4,6 +4,7 @@
  */
 package edu.jsu.mcis.cs310.tas_fa24.dao;
 import edu.jsu.mcis.cs310.tas_fa24.Badge;
+import edu.jsu.mcis.cs310.tas_fa24.Department;
 import edu.jsu.mcis.cs310.tas_fa24.Employee;
 import edu.jsu.mcis.cs310.tas_fa24.EmployeeType;
 import edu.jsu.mcis.cs310.tas_fa24.Shift;
@@ -51,9 +52,9 @@ public class EmployeeDAO {
                     LocalDateTime active = rs.getTimestamp("active").toLocalDateTime();
                     
                     
-                    Badge badge = DAOFactory.getBadgeDAO().find(rs.getString("badgeid"));
-                    Department department = DAOFactory.getDepartmentDAO().find(rs.getInt("departmentid"));
-                    Shift shift = DAOFactory.getShiftDAO().find(rs.getInt("shiftid"));
+                    Badge badge = daoFactory.getBadgeDAO().find(rs.getString("badgeid"));
+                    Department department = daoFactory.getDepartmentDAO().find(rs.getInt("departmentid"));
+                    Shift shift = daoFactory.getShiftDAO().find(rs.getInt("shiftid"));
                     EmployeeType employeeType = EmployeeType.values()[rs.getInt("employeetypeid") - 1];
 
                     // Construct Employee object
