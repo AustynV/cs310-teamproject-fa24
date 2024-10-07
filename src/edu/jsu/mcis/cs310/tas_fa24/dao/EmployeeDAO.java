@@ -51,7 +51,7 @@ public class EmployeeDAO {
                     LocalDateTime active = rs.getTimestamp("active").toLocalDateTime();
                     
                     
-                    Badge badge = DAOFactory.getBadgeDAO().find(rs.getString("badgeid"));
+                    Badge badge = daoFactory.getBadgeDAO().find(rs.getString("badgeid"));
                     Department department = DAOFactory.getDepartmentDAO().find(rs.getInt("departmentid"));
                     Shift shift = DAOFactory.getShiftDAO().find(rs.getInt("shiftid"));
                     EmployeeType employeeType = EmployeeType.values()[rs.getInt("employeetypeid") - 1];
