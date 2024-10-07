@@ -41,8 +41,7 @@ public class DepartmentDAO {
 
     }
 
-    String num = "#";
-    String termId = ", Terminal ID: ";
+
     
     public Department find(int id){
         
@@ -62,30 +61,24 @@ public class DepartmentDAO {
                 ps = conn.prepareStatement(QUERY_FIND);
                 
                 ps.setInt(1, id);
-                //System.out.println(ps);
-                ResultSet rst = ps.executeQuery();
                 
-                rst.next();
-                String desc = rst.getString("description");
-                String termID = rst.getString("terminalid");
-                String idNum = rst.getString("id");
+                rs = ps.executeQuery();
+          
+            if (rs.next()) {
+                String desc = rs.getString("description");
+                int idNum = rs.getInt("id");
+                int termID = rs.getInt("terminalid");
                 
-                //System.out.println(desc);
-                //System.out.println(termID);
-                //System.out.println(idNum);
-                //ResultSetMetaData meta = ps.getMetaData();
-                //int cols = meta.getColumnCount();
-                //for (int k = 1; k <= cols; ++k)
-                   //break;
+                result = new Department(Integer.toString(idNum), desc, Integer.toString(termID));
 
-                StringBuilder sb = new StringBuilder();
-                //assertEquals("#6 (Office), Terminal ID: 102", d2.toString());
-                sb.append(num);
-                sb.append(idNum).append(" ");
-                sb.append("(").append(desc).append(")");
-                sb.append(termId);
-                sb.append(termID);
-                System.out.println(sb);
+                }
+
+
+                
+
+
+                
+                
                 
             }
             
@@ -104,4 +97,3 @@ public class DepartmentDAO {
         
     }
     }
-}
