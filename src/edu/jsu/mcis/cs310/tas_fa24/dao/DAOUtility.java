@@ -5,6 +5,8 @@ import java.util.*;
 import java.time.temporal.ChronoUnit;
 import java.time.format.DateTimeFormatter;
 import com.github.cliftonlabs.json_simple.*;
+import edu.jsu.mcis.cs310.tas_fa24.Punch;
+import edu.jsu.mcis.cs310.tas_fa24.Shift;
 
 /**
  * 
@@ -14,6 +16,9 @@ import com.github.cliftonlabs.json_simple.*;
  * 
  */
 public final class DAOUtility {
+    
+    
+    // @author: Austyn
     public static int calculateTotalMinutes(ArrayList<Punch> dailypunchlist, Shift shift){
         
     int totalMinutes = 0;
@@ -30,7 +35,7 @@ public final class DAOUtility {
         Punch punchOut = dailypunchlist.get(i + 1);
 
         // Ignores the "time out" punches that occur.
-        if(punchOut.getPunchtype() == Punch.PunchType.TIME_OUT){
+        if(Punch.punchType() == Punch.punchType.TIME_OUT){
             continue;
         }
 
@@ -47,5 +52,6 @@ public final class DAOUtility {
     
     // Returns value for totalMinutes back to variable.
     return totalMinutes;
-}
+    
+    }
 }
