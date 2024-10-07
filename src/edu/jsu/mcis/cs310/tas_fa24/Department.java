@@ -17,20 +17,19 @@ public class Department {
         this.id = id;
         this.description = description;    
         this.terminalid = terminalid;
-        
-                StringBuilder sb = new StringBuilder();
-                //assertEquals("#6 (Office), Terminal ID: 102", d2.toString());
-                sb.append(num);
-                sb.append(id).append(" ");
-                sb.append("(").append(description).append(")");
-                sb.append(termId);
-                sb.append(terminalid);
-                
-        
-        
+
     }
     
-
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(num);
+        sb.append(id).append(" ");
+        sb.append("(").append(description).append(")");
+        sb.append(termId);
+        sb.append(terminalid);
+        return sb.toString();
+    }
 
     }
     

@@ -61,30 +61,16 @@ public class DepartmentDAO {
                 ps = conn.prepareStatement(QUERY_FIND);
                 
                 ps.setInt(1, id);
-                //System.out.println(ps);
-                ResultSet rst = ps.executeQuery();
+                
+                rs = ps.executeQuery();
           
+            if (rs.next()) {
+                String desc = rs.getString("description");
+                int idNum = rs.getInt("id");
+                int termID = rs.getInt("terminalid");
                 
-                
-                
-                if (rst.next()){
-                    
-                
-                //System.out.println(result);
-                String desc = rst.getString("description");
-                String termID = rst.getString("terminalid");
-                String idNum = rst.getString("id");      
-                
-                result = new Department(idNum,desc,termID);
-                    System.out.println(result);
-                
-                
+                result = new Department(Integer.toString(idNum), desc, Integer.toString(termID));
 
-                
-                
-
-                
-                
                 }
 
 
@@ -111,4 +97,3 @@ public class DepartmentDAO {
         
     }
     }
-}
