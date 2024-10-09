@@ -10,6 +10,7 @@ import edu.jsu.mcis.cs310.tas_fa24.EmployeeType;
 import edu.jsu.mcis.cs310.tas_fa24.Shift;
 import java.sql.*;
 import java.time.LocalDateTime;
+import src.edu.jsu.mcis.cs310.tas_fa24.Shift;
 
 /**
  *
