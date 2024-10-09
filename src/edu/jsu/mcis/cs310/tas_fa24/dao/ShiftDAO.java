@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ShiftDAO {
-    private stattic final String QUERY_FIND = "SELECT * FROM shift WHERE id = ?";
+    private static final String QUERY_FIND = "SELECT * FROM shift WHERE id = ?";
     private final DAOFactory daoFactory;
     
     public ShiftDAO(DAOFactory daoFactory){
