@@ -16,10 +16,10 @@ import java.util.Optional;
  * @author catuc
  */
 public class PunchDAO {
-    private static final String QUERY_FIND = "SELECT p.*, b.description AS badge_description " +
-                                             "FROM punch p " +
-                                             "JOIN badge b ON p.badgeid = b.id " +
-                                             "WHERE p.id = ?";
+    private static final String QUERY_FIND = "SELECT p.*, b.description AS badge_description " + "FROM punch p " + "JOIN badge b ON p.badgeid = b.id " + "WHERE p.id = ?";
+                                             
+                                             
+                                             
     private final DAOFactory daoFactory;
     
     public PunchDAO(DAOFactory daoFactory){
@@ -53,7 +53,7 @@ public class PunchDAO {
                  }
              }
          } catch (SQLException e){
-             throw new DAOException("Error finding punch with ID: " + id, e);
+             throw new RuntimeException("Error finding punch with ID: " + id, e);
          }
          
          return punch;
