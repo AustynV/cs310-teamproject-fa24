@@ -4,13 +4,22 @@
  */
 package edu.jsu.mcis.cs310.tas_fa24.dao;
 import edu.jsu.mcis.cs310.tas_fa24.Punch;
+import edu.jsu.mcis.cs310.tas_fa24.Badge;
+import edu.jsu.mcis.cs310.tas_fa24.EventType;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Optional;
 /**
  *
  * @author catuc
  */
 public class PunchDAO {
-    private static final String QUERY_FIND = "SELECT * FROM punch WHERE id = ?";
+    private static final String QUERY_FIND = "SELECT p.*, b.description AS badge_description " +
+                                             "FROM punch p " +
+                                             "JOIN badge b ON p.badgeid = b.id " +
+                                             "WHERE p.id = ?";
     private final DAOFactory daoFactory;
     
     public PunchDAO(DAOFactory daoFactory){
@@ -27,18 +36,27 @@ public class PunchDAO {
              
              try (ResultSet rs = ps.executeQuery()){
                  if (rs.next()){
-                     Timestamp timestamp = rs.getTimestamp("timestamp");
                      int terminalId = rs.getInt("terminalid");
+                     String badgeId = rs.getString("badgeid");
+                     String badgeDescription = rs.getString("badge_description");
+                     Timestamp timestamp = rs.getTimestamp("timestamp");
                      int punchTypeId = rs.getInt("punchtypeid");
-                     int badgeId = rs.getInt("badgeid");
+                    
                      
-                     punch = new Punch(id, timestamp, terminalId, punchTypeId, badgeId);
+                     LocalDateTime originalTimestamp = timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                     
+                     Badge badge = new Badge(badgeId, badgeDescription);
+                     
+                     EventType punchType = EventType.values()[punchTypeId];
+                     
+                     punch = new Punch(id, terminalId, badge, originalTimestamp, punchType);
                  }
              }
          } catch (SQLException e){
-             hrow new DAOException("Error finding punch with ID: " + id, e)
+             throw new DAOException("Error finding punch with ID: " + id, e);
          }
          
          return punch;
     }
+    
 }
