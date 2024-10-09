@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package edu.jsu.mcis.cs310.tas_fa24;
+package src.edu.jsu.mcis.cs310.tas_fa24;
 
 
 import java.time.LocalTime;
@@ -17,10 +17,10 @@ public class Shift {
     private final String description;
     private final int id, roundinterval, graceperiod, dockpenalty, lunchthreshold;
     private final LocalTime shiftstart, shiftstop, lunchstart, lunchstop;
-    Private final int shiftduration, lunchduration;
+    private final int shiftduration, lunchduration;
     
-}
-public shift(int id, String description, LocalTime shiftstart,LocalTime shiftstop,LocalTime lunchstart, LocalTime lunchstop, int roundintreval, iint graceperiod, int dockpenalty, int lunchthreshold)
+
+public Shift(int id, String description, LocalTime shiftstart,LocalTime shiftstop,LocalTime lunchstart, LocalTime lunchstop, int roundintreval, int graceperiod, int dockpenalty, int lunchthreshold, int roundinterval)
 {
 	this.id = id;
 	this.description = description;
@@ -41,7 +41,7 @@ public shift(int id, String description, LocalTime shiftstart,LocalTime shiftsto
 public int getId() {
 	return id;
 }
-public String getDescription() {
+public  String getDescription() {
 	return description;
 }
 public LocalTime getShiftStart() {
@@ -81,7 +81,7 @@ public String toString() {
 "Shift Start: " + shiftstart + "\n" +
 "Shift Stop: " + shiftstart + "\n" +
 "Lunch Start:" + lunchstart + "\n" +
-"Lunch Stop:"  + lunch stop + "\n" +
+"Lunch Stop:"  + lunchstop + "\n" +
 "Shift Duration: " + shiftduration + "minutes\n" +
 "Lunch Duration: " + lunchduration + "minutes\n" +
 "Round Interval: " + roundinterval + "minutes\n" +
