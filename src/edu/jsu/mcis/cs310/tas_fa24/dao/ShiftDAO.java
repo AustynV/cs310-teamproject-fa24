@@ -19,21 +19,23 @@ public class ShiftDAO {
              PreparedStatement ps = conn.prepareStatement(QUERY_FIND)){
             
             ps.setInt(1, id);
-            
+            System.out.println(ps);
             try (ResultSet rs = ps.executeQuery()){
+                
                 if (rs.next()){
+                    
                     Map<String, String> parameters = new HashMap<>();
                     parameters.put("startTime", rs.getString("startTime"));
                     parameters.put("stopTime", rs.getString("stopTime"));
                     parameters.put("otherParameter", rs.getString("otherParameter"));
                     parameters.put("lunchDuration", rs.getString("lunchDuration"));
                     parameters.put("shiftDuration", rs.getString("shiftDuration"));
-                    
+                    System.out.println(parameters);
                     shift = new Shift(parameters);
                 }
             }
         } catch (SQLException e){
-            throw new RuntimeException("Error finding punch with ID: " + id, e);
+            throw new RuntimeException("Error finding shift with ID: " + id, e);
         }
         
         return shift;
