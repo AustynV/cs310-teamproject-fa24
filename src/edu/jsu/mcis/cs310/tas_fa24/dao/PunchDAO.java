@@ -18,7 +18,7 @@ import java.util.Optional;
 public class PunchDAO {
     private static final String QUERY_FIND = "SELECT p.*, b.description AS badge_description " + "FROM punch p " + "JOIN badge b ON p.badgeid = b.id " + "WHERE p.id = ?";
                                              
-                                             
+    private static final String QUERY_INSERT = "INSERT INTO punch (terminalid, badgeid, timestamp, punchtypeid) " + "VALUES (?, ?, ?, ?)";                                         
                                              
     private final DAOFactory daoFactory;
     
@@ -59,4 +59,29 @@ public class PunchDAO {
          return punch;
     }
     
+    Public int Create(Punch newPunch){
+        int generateId = 0;
+        
+        if (!isAuthorized(newPunch)){
+            return 0;
+        }
+        
+        try (Connection conn = daoFactory.getConnection();
+                PreparedStatement ps = conn.prepareStatement(QUERY_INSERT, Statement.RETURN_GENERATED_KEYS)){
+            ps.setInt(1, newPunch.getTerminalId());
+            ps.getString(2, newPunch.getBadge().getId());
+            ps.setTimestamp(3, Timestamp.valueOf(newPunch.getAdjustedTimestamp()));
+            ps.setInt(4, newPunch.getPunchType().ordinal());
+            
+            int affectedRows  = ps.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = ps.getGeneratedKeys()){
+                    if (generatedKeys  = next()){
+                        generatedId = generatedKeys.getInt(1);
+                    }
+                }
+            }
+        }
+        
+    }
 }
