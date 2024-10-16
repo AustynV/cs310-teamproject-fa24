@@ -25,8 +25,8 @@ public class ShiftDAO {
                 if (rs.next()){
                     
                     Map<String, String> parameters = new HashMap<>();
-                    parameters.put("startTime", rs.getString("startTime"));
-                    parameters.put("stopTime", rs.getString("stopTime"));
+                    parameters.put("shiftstart", rs.getString("shiftstart"));
+                    parameters.put("shiftstop", rs.getString("shiftstop"));
                     parameters.put("otherParameter", rs.getString("otherParameter"));
                     parameters.put("lunchDuration", rs.getString("lunchDuration"));
                     parameters.put("shiftDuration", rs.getString("shiftDuration"));
@@ -35,6 +35,7 @@ public class ShiftDAO {
                 }
             }
         } catch (SQLException e){
+            e.printStackTrace();
             throw new RuntimeException("Error finding shift with ID: " + id, e);
         }
         
