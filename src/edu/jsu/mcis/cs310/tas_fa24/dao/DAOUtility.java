@@ -6,6 +6,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.format.DateTimeFormatter;
 import com.github.cliftonlabs.json_simple.*;
 import edu.jsu.mcis.cs310.tas_fa24.Punch;
+import edu.jsu.mcis.cs310.tas_fa24.PunchAdjustmentType;
 import edu.jsu.mcis.cs310.tas_fa24.Shift;
 
 /**
@@ -35,7 +36,7 @@ public final class DAOUtility {
         Punch punchOut = dailypunchlist.get(i + 1);
 
         // Ignores the "time out" punches that occur.
-        if(Punch.punchType() == Punch.punchType.TIME_OUT){
+        if(Punch.adjustmentType == PunchAdjustmentType.INTERVAL_ROUND){
             continue;
         }
 
@@ -45,7 +46,7 @@ public final class DAOUtility {
     }
 
     // If they have a lunch break, then it deducts it form their total time (totalMinutes).
-    if(totalMinutes > shift.getLunchThreshold()){
+    if(totalMinutes > shift.getShiftDuration()){
         totalMinutes -= shift.getLunchDuration();
         isLunchDeducted = true;
     }
