@@ -8,26 +8,26 @@ package edu.jsu.mcis.cs310.tas_fa24;
 import java.util.Map;
 
 public class Shift {
-    private final String startTime;
-    private final String stopTime;
+    private final String shiftStart;
+    private final String shiftStop;
     private final String otherParameter;
     private final int lunchDuration;
     private final int shiftDuration;
     
     public Shift(Map<String, String> parameters){
-        this.startTime = parameters.get("startTime");
-        this.stopTime = parameters.get("stopTime");
+        this.shiftStart = parameters.get("shiftStart");
+        this.shiftStop = parameters.get("shiftStop");
         this.otherParameter = parameters.get("otherParameter");
         this.lunchDuration = Integer.parseInt(parameters.get("lunchDuration"));
         this.shiftDuration = Integer.parseInt(parameters.get("shiftDuration"));
     }
     
     public String getStarted(){
-        return startTime;
+        return shiftStart;
     }
     
     public String getStopTime(){
-        return stopTime;
+        return shiftStop;
     }
     
     public String getOtherParameters(){
@@ -43,7 +43,7 @@ public class Shift {
     }
     
     public String toString(){
-        return "Shift{" + "startTime='" + startTime + '\'' + ", stopTime='" + stopTime + '\'' +
+        return "Shift{" + "shiftStart='" + shiftStart + '\'' + ", shiftStop='" + shiftStop + '\'' +
                 ", otherParameter='" + otherParameter + '\'' + ", lunchDuration=" + lunchDuration + 
                 ", shiftDuration=" + shiftDuration +'}';
     }
