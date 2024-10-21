@@ -16,7 +16,9 @@ import java.util.Optional;
 public class PunchDAO {
     private static final String QUERY_FIND = "SELECT p.*, b.description AS badge_description " + "FROM punch p " + "JOIN badge b ON p.badgeid = b.id " + "WHERE p.id = ?";
                                              
-    private static final String QUERY_INSERT = "INSERT INTO punch (terminalid, badgeid, timestamp, punchtypeid) " + "VALUES (?, ?, ?, ?)";                                         
+    private static final String QUERY_INSERT = "INSERT INTO punch (terminalid, badgeid, timestamp, punchtypeid) " + "VALUES (?, ?, ?, ?)";  
+    
+    private static final String QUERY_GET_EMPLOYEE_DEPARTMENT_TERMINAL = "Select d.clockterminalid FROM employee e "  +  "JOIN department d ON e. departmentid = d.id " + "WHERE e.badgeId = ?";
                                              
     private final DAOFactory daoFactory;
     
@@ -57,34 +59,35 @@ public class PunchDAO {
          return punch;
     }
     
-    public int Create(Punch newPunch){
+    public int create (Punch newPunch){
         int generatedId = 0;
         
-        /*if (!isAuthorized(newPunch)){
-            return 0;
-        }*/
+        if (!isAuthorized(newPunch)){
+            throw new IllegalArgumentException("Unathorized punch creation attempt for Badge ID: " + newPunch.getBadge().getId());
+        }
         
-        try (Connection conn = daoFactory.getConnection();
-                PreparedStatement ps = conn.prepareStatement(QUERY_INSERT, Statement.RETURN_GENERATED_KEYS)){
+        try(Connection conn = daoFactory.getConnection();
+         PreparedStatement ps = conn.prepareStatement(QUERY_INSERT, Statement.RETURN_GENERATED_KEYS)){
             ps.setInt(1, newPunch.getTerminalId());
             ps.setString(2, newPunch.getBadge().getId());
             ps.setTimestamp(3, Timestamp.valueOf(newPunch.getAdjustedTimestamp()));
             ps.setInt(4, newPunch.getPunchType().ordinal());
             
-            int affectedRows  = ps.executeUpdate();
-            if (affectedRows > 0) {
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0){
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()){
-                    if (generatedKeys.next()){
+                    if (generatedKeys.next()) {
                         generatedId = generatedKeys.getInt(1);
                     } else {
-                        return 0;
+                        throw new SQLException("Creating punch failed, no Id obtained");
                     }
                 }
+            } else {
+                throw new SQLException("Creating punch failed, no rows affected");
             }
-        }  catch (SQLException e) {
-        throw new RuntimeException("Error creating punch", e);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error creatign punch" , e);
         }
-        
         return generatedId;
     }
 }
