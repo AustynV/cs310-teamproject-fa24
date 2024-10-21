@@ -90,4 +90,34 @@ public class PunchDAO {
         }
         return generatedId;
     }
+    
+    private boolean isAuthorized(Punch newPunch){
+        if (newPunch.getTerminalId() == 0){
+            return true;
+        }
+        String badgeId = newPunch.getBadge().getId();
+        int departmentTerminalId = getDepartmentTerminalId(badgeId);
+        
+        return newPunch.getTerminalId() == departmentTerminalId;
+    }
+    
+    private int getDepartmentTerminalId(String badgeId){
+        int terminalId = 0;
+        
+        try (Connection conn = daoFactory.getConnection(); 
+                PreparedStatement ps = conn.prepareStatement(QUERY_GET_EMPLOYEE_DEPARTMENT_TERMINAL)){
+            
+            ps.setString(1, badgeId);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()){
+                    terminalId = rs.getInt("clockterminalid");
+                }
+            }
+        } catch (SQLException e){
+            throw new RuntimeException("Error retrieving department terminal ID for badge: " + badgeId, e); 
+        }
+         
+        return terminalId;
+    }
 }
