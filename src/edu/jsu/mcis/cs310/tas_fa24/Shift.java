@@ -8,6 +8,7 @@ package edu.jsu.mcis.cs310.tas_fa24;
 import java.util.Map;
 
 public class Shift {
+
     private final String id;
     private final String description;
     private final String startTime;
@@ -40,10 +41,27 @@ public class Shift {
     public String getStarted(){
         System.out.println("here");
         return startTime;
+
+    private final String shiftStart;
+    private final String shiftStop;
+    private final String otherParameter;
+    private final int lunchDuration;
+    private final int shiftDuration;
+    
+    public Shift(Map<String, String> parameters){
+        this.shiftStart = parameters.get("shiftStart");
+        this.shiftStop = parameters.get("shiftStop");
+        this.otherParameter = parameters.get("otherParameter");
+        this.lunchDuration = Integer.parseInt(parameters.get("lunchDuration"));
+        this.shiftDuration = Integer.parseInt(parameters.get("shiftDuration"));
+    }
+    
+    public String getStarted(){
+        return shiftStart;
     }
     
     public String getStopTime(){
-        return stopTime;
+        return shiftStop;
     }
     
    // public String getOtherParameters(){
@@ -61,6 +79,7 @@ public class Shift {
     @Override
     
     public String toString(){
+
         
         //Shift 1: 07:00 - 15:30 (510 minutes); Lunch: 12:00 - 12:30 (30 minutes)
         StringBuilder sb = new StringBuilder();
@@ -74,5 +93,10 @@ public class Shift {
         //return "Shift{" + "startTime='" + startTime + '\'' + ", stopTime='" + stopTime + '\'' +
           //      ", otherParameter='" + '\'' + ", lunchDuration=" + lunchDuration + 
             //    ", shiftDuration=" + shiftDuration +'}';
+
+        return "Shift{" + "shiftStart='" + shiftStart + '\'' + ", shiftStop='" + shiftStop + '\'' +
+                ", otherParameter='" + otherParameter + '\'' + ", lunchDuration=" + lunchDuration + 
+                ", shiftDuration=" + shiftDuration +'}';
+
     }
 }
