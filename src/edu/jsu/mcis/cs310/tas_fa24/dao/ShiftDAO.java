@@ -13,25 +13,34 @@ public class ShiftDAO {
     }
     
     public Shift find (int id){
+        
         Shift shift = null;
         
         try (Connection conn = daoFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(QUERY_FIND)){
             
             ps.setInt(1, id);
-            System.out.println(ps);
+            
             try (ResultSet rs = ps.executeQuery()){
                 
                 if (rs.next()){
                     
                     Map<String, String> parameters = new HashMap<>();
+                    parameters.put("id",rs.getString("id"));
+                    parameters.put("description", rs.getString("description"));
                     parameters.put("shiftstart", rs.getString("shiftstart"));
-                    parameters.put("shiftstop", rs.getString("shiftstop"));
-                    parameters.put("otherParameter", rs.getString("otherParameter"));
-                    parameters.put("lunchDuration", rs.getString("lunchDuration"));
-                    parameters.put("shiftDuration", rs.getString("shiftDuration"));
-                    System.out.println(parameters);
-                    shift = new Shift(parameters);
+                    parameters.put("shiftstop", rs.getString("shiftstop"));                    
+                    parameters.put("roundinterval", rs.getString("roundinterval"));
+                    parameters.put("graceperiod", rs.getString("graceperiod"));
+                    parameters.put("dockpenalty", rs.getString("dockpenalty"));
+                    
+                    parameters.put("lunchstart", rs.getString("lunchstart"));
+                    parameters.put("lunchstop", rs.getString("lunchstop"));
+                   // parameters.put("otherParameter", rs.getString("otherParameter"));
+                    parameters.put("lunchDuration", rs.getString("lunchthreshold"));
+                    //parameters.put("shiftDuration", rs.getString("shiftDuration"));
+                    //System.out.println(parameters);
+                    shift = new Shift((parameters));                                                                             
                 }
             }
         } catch (SQLException e){

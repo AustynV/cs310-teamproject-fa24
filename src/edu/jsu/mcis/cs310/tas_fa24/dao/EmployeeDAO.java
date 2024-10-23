@@ -21,10 +21,12 @@ public class EmployeeDAO {
     EmployeeDAO(DAOFactory daoFactory){
         this.daoFactory = daoFactory;
     }
+    String QUERY_FIND = "SELECT * FROM employee WHERE id = ?";    
 
 
     // Find Employee by ID
     public Employee find(int id) {
+        
         Employee result = null;
 
         PreparedStatement ps = null;
@@ -36,17 +38,18 @@ public class EmployeeDAO {
 
             
             if (conn.isValid(0)) {
+
                 
-                String QUERY_FIND = "SELECT * FROM employee WHERE id = ?";
                 ps = conn.prepareStatement(QUERY_FIND);
                 ps.setInt(1, id);
-
-                rs = ps.executeQuery();
                 
+                rs = ps.executeQuery();
+
                
                 if (rs.next()) {
                     
                     String firstname = rs.getString("firstname");
+                    
                     String middlename = rs.getString("middlename");
                     String lastname = rs.getString("lastname");
                     LocalDateTime active = rs.getTimestamp("active").toLocalDateTime();
@@ -54,14 +57,19 @@ public class EmployeeDAO {
                     
                     Badge badge = daoFactory.getBadgeDAO().find(rs.getString("badgeid"));
                     Department department = daoFactory.getDepartmentDAO().find(rs.getInt("departmentid"));
-                    System.out.println(rs.getInt("shiftid"));
+                    //System.out.println(rs.getInt("shiftid"));
+                                                                                 
                     Shift shift = daoFactory.getShiftDAO().find(rs.getInt("shiftid"));
-                    
-                    
+                    System.out.println("here");
+
+            
                     EmployeeType employeeType = EmployeeType.values()[rs.getInt("employeetypeid") - 1];
 
                     // Construct Employee object
+
                     result = new Employee(id, firstname, middlename, lastname, active, badge, department, shift, employeeType);
+                    System.out.println(result);
+
                 }
             }
         } catch (SQLException e) {
@@ -75,7 +83,7 @@ public class EmployeeDAO {
                 try { ps.close(); } catch (SQLException e) { e.printStackTrace(); }
             }
         }
-
+        
         return result;
     }
 
@@ -115,7 +123,7 @@ public class EmployeeDAO {
                 try { ps.close(); } catch (SQLException e) { e.printStackTrace(); }
             }
         }
-
+        System.out.println("here");
         return result;
     }
 }
