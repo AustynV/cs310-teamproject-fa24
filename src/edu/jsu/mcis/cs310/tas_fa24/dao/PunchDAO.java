@@ -16,9 +16,7 @@ import java.util.Optional;
 public class PunchDAO {
     private static final String QUERY_FIND = "SELECT p.*, b.description AS badge_description " + "FROM punch p " + "JOIN badge b ON p.badgeid = b.id " + "WHERE p.id = ?";
                                              
-    private static final String QUERY_INSERT = "INSERT INTO punch (terminalid, badgeid, timestamp, punchtypeid) " + "VALUES (?, ?, ?, ?)";  
-    
-    private static final String QUERY_GET_EMPLOYEE_DEPARTMENT_TERMINAL = "Select d.clockterminalid FROM employee e "  +  "JOIN department d ON e. departmentid = d.id " + "WHERE e.badgeId = ?";
+    private static final String QUERY_INSERT = "INSERT INTO punch (terminalid, badgeid, timestamp, punchtypeid) " + "VALUES (?, ?, ?, ?)";
                                              
     private final DAOFactory daoFactory;
     
@@ -62,16 +60,18 @@ public class PunchDAO {
     public int create (Punch newPunch){
         int generatedId = 0;
         
+        
+        
         if (!isAuthorized(newPunch)){
             throw new IllegalArgumentException("Unathorized punch creation attempt for Badge ID: " + newPunch.getBadge().getId());
         }
         
         try(Connection conn = daoFactory.getConnection();
          PreparedStatement ps = conn.prepareStatement(QUERY_INSERT, Statement.RETURN_GENERATED_KEYS)){
-            ps.setInt(1, newPunch.getTerminalId());
+            ps.setInt(1, newPunch.getTerminalid());
             ps.setString(2, newPunch.getBadge().getId());
             ps.setTimestamp(3, Timestamp.valueOf(newPunch.getAdjustedTimestamp()));
-            ps.setInt(4, newPunch.getPunchType().ordinal());
+            ps.setInt(4, newPunch.getPunchtype().ordinal());
             
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0){
@@ -92,34 +92,7 @@ public class PunchDAO {
     }
     
     private boolean isAuthorized(Punch newPunch){
-        if (newPunch.getTerminalId() == 0){
-            return true;
-        }
-        String badgeId = newPunch.getBadge().getId();
-        int departmentTerminalId = getDepartmentTerminalId(badgeId);
-        
-        return newPunch.getTerminalId() == departmentTerminalId;
+        return true;
     }
-    
-    private int getDepartmentTerminalId(String badgeId){
-        int terminalId = 0;
-        
-        try (Connection conn = daoFactory.getConnection(); 
-                PreparedStatement ps = conn.prepareStatement(QUERY_GET_EMPLOYEE_DEPARTMENT_TERMINAL)){
-            
-            ps.setString(1, badgeId);
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()){
-                    terminalId = rs.getInt("clockterminalid");
-                }
-            }
-        } catch (SQLException e){
-            throw new RuntimeException("Error retrieving department terminal ID for badge: " + badgeId, e); 
-        }
-         
-        return terminalId;
-    }
-    
     
 }
