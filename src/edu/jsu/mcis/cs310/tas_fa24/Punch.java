@@ -13,8 +13,8 @@ public class Punch {
     private Badge badge;
     private LocalDateTime originalTimestamp;
     private LocalDateTime adjustedTimestamp;
-    public static EventType punchType;
-    public static PunchAdjustmentType adjustmentType;
+    public EventType punchType;
+    public PunchAdjustmentType adjustmentType;
     
     //constructor for new punches
     public Punch(int terminalId, Badge badge, EventType punchType){
@@ -41,7 +41,7 @@ public class Punch {
         return id;
     }
     
-    public int getTerminalId(){
+    public int getTerminalid(){
         return terminalId;
     }
     
@@ -49,7 +49,7 @@ public class Punch {
         return badge;
     }
     
-    public LocalDateTime getOriginalTimestamp(){
+    public LocalDateTime getOriginaltimestamp(){
         return originalTimestamp;
     }
     
@@ -57,7 +57,7 @@ public class Punch {
         return adjustedTimestamp;
     }
     
-    public static EventType getPunchType(){
+    public EventType getPunchtype(){
         return punchType;
     }
     
