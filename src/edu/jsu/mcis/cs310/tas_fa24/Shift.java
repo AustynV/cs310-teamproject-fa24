@@ -66,13 +66,14 @@ public class Shift {
         sb.append("Shift ");
         sb.append(id).append(": ");
         sb.append(startTime).append(" - ").append(stopTime);
+        sb.append(" (").append(shiftDuration).append(");");
+        sb.append(" Lunch: ");
+        sb.append(lunchStart).append(" - ").append(lunchStop);
+        sb.append(" (").append(lunchDuration).append(")");
         
         System.out.println(sb.toString());
         return sb.toString();
 
-        //return "Shift{" + "startTime='" + startTime + '\'' + ", stopTime='" + stopTime + '\'' +
-          //      ", otherParameter='" + '\'' + ", lunchDuration=" + lunchDuration + 
-            //    ", shiftDuration=" + shiftDuration +'}';
 
 
 

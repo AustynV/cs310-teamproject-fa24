@@ -40,7 +40,8 @@ public class ShiftDAO {
                     parameters.put("lunchDuration", rs.getString("lunchthreshold"));
                     //parameters.put("shiftDuration", rs.getString("shiftDuration"));
                     //System.out.println(parameters);
-                    shift = new Shift((parameters));                                                                             
+                    System.out.println(parameters);
+                    shift = new Shift(parameters);                                                                             
                 }
             }
         } catch (SQLException e){
