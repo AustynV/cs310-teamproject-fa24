@@ -6,6 +6,10 @@ package edu.jsu.mcis.cs310.tas_fa24;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.LocalTime;
+import java.time.Duration;
+import java.time.DayOfWeek;
+import java.time.temporal.ChronoUnit;
 
 public class Punch {
     
@@ -14,8 +18,8 @@ public class Punch {
     private Badge badge;
     private LocalDateTime originalTimestamp;
     private LocalDateTime adjustedTimestamp;
-    public EventType punchType;
-    public PunchAdjustmentType adjustmentType;
+    private EventType punchType;
+    private PunchAdjustmentType adjustmentType;
     
     //constructor for new punches
     public Punch(int terminalId, Badge badge, EventType punchType){
@@ -37,6 +41,8 @@ public class Punch {
         this.adjustedTimestamp = null;
         this.adjustmentType = null;
     }
+    
+    
     
     public Integer getId(){
         return id;
@@ -72,5 +78,12 @@ public class Punch {
         return "#" + badge.getId() + " " + punchType + ": " + formattedTimestamp;
     }
     
+    public void adjust (Shift s){
+        
+        LocalDateTime original = originalTimestamp;
+        DayOfWeek day = original.getDayOfWeek();
+        
+        
+    }
     
 }
