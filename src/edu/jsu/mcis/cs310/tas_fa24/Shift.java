@@ -10,9 +10,9 @@ public class Shift {
     private final String startTime;
     private final String stopTime;
     
-    private final String roundinterval;
-    private final String graceperiod;
-    private final String dockpenalty;
+    private final String roundInterval;
+    private final String gracePeriod;
+    private final String dockPenalty;
     private final String lunchStart;
     private final String lunchStop;
     private final String lunchDuration;
@@ -23,9 +23,9 @@ public class Shift {
         this.description = parameters.get("description");
         this.startTime = parameters.get("startTime");
         this.stopTime = parameters.get("stopTime");
-        this.roundinterval = parameters.get("roundinterval");
-        this.graceperiod = parameters.get("graceperiod");
-        this.dockpenalty = parameters.get("dockpenalty");
+        this.roundInterval = parameters.get("roundinterval");
+        this.gracePeriod = parameters.get("graceperiod");
+        this.dockPenalty = parameters.get("dockpenalty");
         //this.otherParameter = parameters.get("otherParameter");
         this.lunchStart = parameters.get("lunchstart");
         this.lunchStop = parameters.get("lunchstop");
@@ -44,17 +44,37 @@ public class Shift {
         return stopTime;
     }
     
+    public String getRoundedInterval(){
+        return roundInterval;
+    }
+    
+    public String getGracePeriod(){
+        return gracePeriod;
+    }
+    
+    public String getDockPenalty(){
+        return dockPenalty;
+    }
+    
+    public String getLunchStart(){
+        return lunchStart;
+    }
+    
+    public String getLunchStop(){
+        return lunchStop;
+    }
+   
    // public String getOtherParameters(){
         //return otherParameter;
     //}
     
-    //public int getLunchDuration(){
-    //    return lunchDuration;
-    //}
+    public String getLunchDuration(){
+        return lunchDuration;
+    }
     
-    //public int getShiftDuration(){
-     //   return shiftDuration;
-    //}
+    public String getShiftDuration(){
+        return shiftDuration;
+    }
     
     @Override
     
