@@ -5,6 +5,7 @@
 package edu.jsu.mcis.cs310.tas_fa24;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Punch {
     
@@ -65,6 +66,11 @@ public class Punch {
         this.adjustedTimestamp = adjustedTimestamp;
     }
     
+    public String printOriginal() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
+        String formattedTimestamp = originalTimestamp.format(formatter);
+        return "#" + badge.getId() + " " + punchType + ": " + formattedTimestamp;
+    }
     
     
 }
