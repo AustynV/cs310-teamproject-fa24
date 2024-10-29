@@ -21,6 +21,8 @@ public class Punch {
     private EventType punchType;
     private PunchAdjustmentType adjustmentType;
     
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
+    
     //constructor for new punches
     public Punch(int terminalId, Badge badge, EventType punchType){
         this.terminalId = terminalId;
@@ -29,7 +31,7 @@ public class Punch {
         this.originalTimestamp = LocalDateTime.now();
         this.adjustedTimestamp = null;
         this.adjustmentType = null;
-        this.id = null;
+        //this.id = null;
     }
     
     public Punch(int id, int terminalId, Badge badge, LocalDateTime originalTimestamp, EventType punchType){
@@ -73,11 +75,41 @@ public class Punch {
     }
     
     public String printOriginal() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
-        String formattedTimestamp = originalTimestamp.format(formatter);
+        
+        String formattedTimestamp = originalTimestamp.format(FORMATTER);
         return "#" + badge.getId() + " " + punchType + ": " + formattedTimestamp;
+        
+        //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
+        //String formattedTimestamp = originalTimestamp.format(formatter);
+        //return "#" + badge.getId() + " " + punchType + ": " + formattedTimestamp;
     }
     
+    public String printAdjusted() {
+        if (adjustedTimestamp != null) {
+            String formattedAdjustedTimestamp = adjustedTimestamp.format(FORMATTER);
+            return "#" + badge.getId() + " " + punchType + ": " + formattedAdjustedTimestamp + " (" + adjustmentType + ")";
+        } else {
+            return "Adjusted timestamp not set";
+        }
+    }
+    
+     private String formatPunchType() {
+        switch (punchType) {
+            case CLOCK_IN:
+                return "CLOCK IN";
+            case CLOCK_OUT:
+                return "CLOCK OUT";
+            case TIME_OUT:
+                return "TIME OUT";
+            default:
+                return "UNKNOWN";
+        }
+    }
+    
+     public String toString() {
+        return printOriginal();
+    }
+     
     public void adjust (Shift s){
         
         LocalDateTime original = originalTimestamp;
