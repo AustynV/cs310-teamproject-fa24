@@ -7,13 +7,13 @@ package edu.jsu.mcis.cs310.tas_fa24;
 public class Department {
 
     private final String description;
-    private final String id;
-    private final String terminalid;
+    private final int id;
+    private final int terminalid;
     //test
     String num = "#";
     String termId = ", Terminal ID: ";
     
-    public Department(String id, String description, String terminalid) {
+    public Department(int id, String description, int terminalid) {
         this.id = id;
         this.description = description;    
         this.terminalid = terminalid;
@@ -30,6 +30,18 @@ public class Department {
         sb.append(terminalid);
         return sb.toString();
     }
-
+    
+    public int getId() {
+        return id;
     }
+
+    public String getDescription() {
+        return description;
+    }
+    
+    public int getTerminalid(){
+        return terminalid;
+    }
+
+}
     
