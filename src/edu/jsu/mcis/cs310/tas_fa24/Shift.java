@@ -1,66 +1,70 @@
 package edu.jsu.mcis.cs310.tas_fa24;
-
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class Shift {
 
-    private final String id;
+    private final int id;
     private final String description;
-    private final String startTime;
-    private final String stopTime;
+    private final LocalDateTime startTime;
+    private final LocalDateTime stopTime;
     
-    private final String roundInterval;
-    private final String gracePeriod;
-    private final String dockPenalty;
-    private final String lunchStart;
-    private final String lunchStop;
-    private final String lunchDuration;
-    private final String shiftDuration;
+    private final LocalDateTime roundInterval;
+    private final LocalDateTime gracePeriod;
+    private final LocalDateTime dockPenalty;
+    private final LocalDateTime lunchStart;
+    private final LocalDateTime lunchStop;
+    private final LocalDateTime lunchDuration;
+    private final LocalDateTime shiftDuration;
     
-    public Shift(Map<String, String> parameters){
-        this.id = parameters.get("id");
-        this.description = parameters.get("description");
-        this.startTime = parameters.get("startTime");
-        this.stopTime = parameters.get("stopTime");
-        this.roundInterval = parameters.get("roundinterval");
-        this.gracePeriod = parameters.get("graceperiod");
-        this.dockPenalty = parameters.get("dockpenalty");
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");    
+    
+    public Shift(Map<String, Object> parameters){
+        this.id = (int) parameters.get(Integer.valueOf("id"));
+        this.description = parameters.get("description").toString();
+        this.startTime = (LocalDateTime) parameters.get(LocalDate.parse("startTime", formatter));
+        
+        this.stopTime = (LocalDateTime) parameters.get(LocalDate.parse("stopTime", formatter));
+        this.roundInterval = (LocalDateTime) parameters.get(LocalDate.parse("roundinterval",formatter));
+        this.gracePeriod = (LocalDateTime) parameters.get(LocalDate.parse("graceperiod", formatter));
+        this.dockPenalty = (LocalDateTime) parameters.get(LocalDate.parse("dockpenalty", formatter));
         //this.otherParameter = parameters.get("otherParameter");
-        this.lunchStart = parameters.get("lunchstart");
-        this.lunchStop = parameters.get("lunchstop");
-        this.lunchDuration = parameters.get("lunchDuration");
-        this.shiftDuration = parameters.get("shiftDuration");
+        this.lunchStart = (LocalDateTime) parameters.get(LocalDate.parse("lunchstart", formatter));
+        this.lunchStop = (LocalDateTime) parameters.get(LocalDate.parse("lunchstop", formatter));
+        this.lunchDuration = (LocalDateTime) parameters.get(LocalDate.parse("lunchDuration", formatter));
+        this.shiftDuration = (LocalDateTime) parameters.get(LocalDate.parse("shiftDuration", formatter));
         
     }
     
-    public String getStarted(){
+    public LocalDateTime getStarted(){
         System.out.println("here");
         return startTime;
 
     }
    
-    public String getStopTime(){
+    public LocalDateTime getStopTime(){
         return stopTime;
     }
     
-    public String getRoundedInterval(){
+    public LocalDateTime getRoundedInterval(){
         return roundInterval;
     }
     
-    public String getGracePeriod(){
+    public LocalDateTime getGracePeriod(){
         return gracePeriod;
     }
     
-    public String getDockPenalty(){
+    public LocalDateTime getDockPenalty(){
         return dockPenalty;
     }
     
-    public String getLunchStart(){
+    public LocalDateTime getLunchStart(){
         return lunchStart;
     }
     
-    public String getLunchStop(){
+    public LocalDateTime getLunchStop(){
         return lunchStop;
     }
    
@@ -68,11 +72,11 @@ public class Shift {
         //return otherParameter;
     //}
     
-    public String getLunchDuration(){
+    public LocalDateTime getLunchDuration(){
         return lunchDuration;
     }
     
-    public String getShiftDuration(){
+    public LocalDateTime getShiftDuration(){
         return shiftDuration;
     }
     
@@ -90,7 +94,7 @@ public class Shift {
         sb.append(" Lunch: ");
         sb.append(lunchStart).append(" - ").append(lunchStop);
         sb.append(" (").append(lunchDuration).append(")");
-        
+        System.out.println("hello");
         System.out.println(sb.toString());
         return sb.toString();
 

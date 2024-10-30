@@ -3,6 +3,7 @@ import edu.jsu.mcis.cs310.tas_fa24.Shift;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.time.LocalDateTime;
 
 public class ShiftDAO {
     private static final String QUERY_FIND = "SELECT * FROM shift WHERE id = ?";
@@ -25,8 +26,10 @@ public class ShiftDAO {
                 
                 if (rs.next()){
                     
-                    Map<String, String> parameters = new HashMap<>();
-                    parameters.put("id",rs.getString("id"));
+                    Map<String, Object> parameters = new HashMap<>();
+                    
+                    parameters.put("id",rs.getInt("id"));
+                    
                     parameters.put("description", rs.getString("description"));
                     parameters.put("shiftstart", rs.getString("shiftstart"));
                     parameters.put("shiftstop", rs.getString("shiftstop"));                    
@@ -36,6 +39,7 @@ public class ShiftDAO {
                     
                     parameters.put("lunchstart", rs.getString("lunchstart"));
                     parameters.put("lunchstop", rs.getString("lunchstop"));
+                    System.out.println("here");
                    // parameters.put("otherParameter", rs.getString("otherParameter"));
                     parameters.put("lunchDuration", rs.getString("lunchthreshold"));
                     //parameters.put("shiftDuration", rs.getString("shiftDuration"));
