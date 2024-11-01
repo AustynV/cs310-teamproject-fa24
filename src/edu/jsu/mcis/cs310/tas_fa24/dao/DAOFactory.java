@@ -23,6 +23,7 @@ public final class DAOFactory {
         try {
             conn = DriverManager.getConnection(url, username, password);
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new DAOException(e.getMessage());
         }
 
