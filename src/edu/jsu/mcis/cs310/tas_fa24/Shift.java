@@ -1,94 +1,94 @@
 package edu.jsu.mcis.cs310.tas_fa24;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class Shift {
 
-    private final int id;
+    private final String id;
     private final String description;
-    private final LocalDateTime startTime;
-    private final LocalDateTime stopTime;
+    private final LocalTime startTime;
+    private final LocalTime stopTime;
     
-    private final LocalDateTime roundInterval;
-    private final LocalDateTime gracePeriod;
-    private final LocalDateTime dockPenalty;
-    private final LocalDateTime lunchStart;
-    private final LocalDateTime lunchStop;
-    private final LocalDateTime lunchDuration;
-    private final LocalDateTime shiftDuration;
+    private final LocalTime roundInterval;
+    private final LocalTime gracePeriod;
+    private final LocalTime dockPenalty;
+    private final LocalTime lunchStart;
+    private final LocalTime lunchStop;
+    private final LocalTime lunchDuration;
+    private final LocalTime shiftDuration;
     
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");    
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");    
     
-    public Shift(Map<String, Object> parameters){
-        this.id = (int) parameters.get(Integer.valueOf("id"));
-        this.description = parameters.get("description").toString();
-        this.startTime = (LocalDateTime) parameters.get(LocalDate.parse("startTime", formatter));
+    public Shift(Map<String, String> parameters){
         
-        this.stopTime = (LocalDateTime) parameters.get(LocalDate.parse("stopTime", formatter));
-        this.roundInterval = (LocalDateTime) parameters.get(LocalDate.parse("roundinterval",formatter));
-        this.gracePeriod = (LocalDateTime) parameters.get(LocalDate.parse("graceperiod", formatter));
-        this.dockPenalty = (LocalDateTime) parameters.get(LocalDate.parse("dockpenalty", formatter));
+        this.id = parameters.get("id");
+        this.description = parameters.get("description").toString();
+        this.startTime = LocalTime.parse(parameters.get("shiftstart"), formatter);
+        
+        
+        this.stopTime = LocalTime.parse(parameters.get("stopTime"), formatter);
+        this.roundInterval = LocalTime.parse(parameters.get("roundinterval"),formatter);
+        this.gracePeriod = LocalTime.parse(parameters.get("graceperiod"), formatter);
+        this.dockPenalty = LocalTime.parse(parameters.get("dockpenalty"), formatter);
         //this.otherParameter = parameters.get("otherParameter");
-        this.lunchStart = (LocalDateTime) parameters.get(LocalDate.parse("lunchstart", formatter));
-        this.lunchStop = (LocalDateTime) parameters.get(LocalDate.parse("lunchstop", formatter));
-        this.lunchDuration = (LocalDateTime) parameters.get(LocalDate.parse("lunchDuration", formatter));
-        this.shiftDuration = (LocalDateTime) parameters.get(LocalDate.parse("shiftDuration", formatter));
+        this.lunchStart = LocalTime.parse(parameters.get("lunchstart"), formatter);
+        this.lunchStop = LocalTime.parse(parameters.get("lunchstop"), formatter);
+        this.lunchDuration = LocalTime.parse(parameters.get("lunchDuration"), formatter);
+        this.shiftDuration = LocalTime.parse(parameters.get("shiftDuration"), formatter);
         
     }
     
-    public LocalDateTime getStarted(){
+    public LocalTime getStarted(){
         System.out.println("here");
         return startTime;
 
     }
    
-    public LocalDateTime getStopTime(){
+    public LocalTime getStopTime(){
         return stopTime;
     }
     
-    public LocalDateTime getRoundedInterval(){
+    public LocalTime getRoundedInterval(){
         return roundInterval;
     }
     
-    public LocalDateTime getGracePeriod(){
+    public LocalTime getGracePeriod(){
         return gracePeriod;
     }
     
-    public LocalDateTime getDockPenalty(){
+    public LocalTime getDockPenalty(){
         return dockPenalty;
     }
     
-    public LocalDateTime getLunchStart(){
+    public LocalTime getLunchStart(){
         return lunchStart;
     }
     
-    public LocalDateTime getLunchStop(){
+    public LocalTime getLunchStop(){
         return lunchStop;
     }
    
-   // public String getOtherParameters(){
-        //return otherParameter;
-    //}
     
-    public LocalDateTime getLunchDuration(){
+    public LocalTime getLunchDuration(){
         return lunchDuration;
     }
     
-    public LocalDateTime getShiftDuration(){
+    public LocalTime getShiftDuration(){
         return shiftDuration;
     }
     
     @Override
     
     public String toString(){
-
-        
+        System.out.println("heeee");
+        String test = "Shift 1: 07:00 - 15:30 (510 minutes); Lunch: 12:00 - 12:30 (30 minutes)";
         //Shift 1: 07:00 - 15:30 (510 minutes); Lunch: 12:00 - 12:30 (30 minutes)
         StringBuilder sb = new StringBuilder();
         sb.append("Shift ");
-        sb.append(id).append(": ");
+        //sb.append(id).append(": ");
         sb.append(startTime).append(" - ").append(stopTime);
         sb.append(" (").append(shiftDuration).append(");");
         sb.append(" Lunch: ");
@@ -96,7 +96,7 @@ public class Shift {
         sb.append(" (").append(lunchDuration).append(")");
         System.out.println("hello");
         System.out.println(sb.toString());
-        return sb.toString();
+        return test;
 
 
 
