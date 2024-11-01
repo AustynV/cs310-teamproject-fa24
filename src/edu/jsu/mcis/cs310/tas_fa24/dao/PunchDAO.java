@@ -157,6 +157,19 @@ public class PunchDAO {
         return punches;
         
     }
+    public ArrayList<Punch> list(Badge badge, LocalDate begin, LocalDate end) {
+        ArrayList<Punch> punchesInRange = new ArrayList<>();
+
+        LocalDate currentDate = begin;
+        while (!currentDate.isAfter(end)) {
+            List<Punch> punchesForDay = list(badge, currentDate);
+            punchesInRange.addAll(punchesForDay);
+            currentDate = currentDate.plusDays(1);
+    }
+
+    return punchesInRange;
+}
+
     
     private boolean isAuthorized(Punch newPunch){
         return true;
