@@ -6,6 +6,8 @@ package edu.jsu.mcis.cs310.tas_fa24.dao;
 import edu.jsu.mcis.cs310.tas_fa24.Punch;
 import edu.jsu.mcis.cs310.tas_fa24.Badge;
 import edu.jsu.mcis.cs310.tas_fa24.EventType;
+import edu.jsu.mcis.cs310.tas_fa24.Department;
+import edu.jsu.mcis.cs310.tas_fa24.Employee;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -18,161 +20,95 @@ import java.util.Optional;
 
 
 public class PunchDAO {
-    private static final String QUERY_FIND = "SELECT p.*, b.description AS badge_description " + "FROM punch p " + "JOIN badge b ON p.badgeid = b.id " + "WHERE p.id = ?";
-                                             
-    private static final String QUERY_INSERT = "INSERT INTO punch (terminalid, badgeid, timestamp, punchtypeid) " + "VALUES (?, ?, ?, ?)";
+    private static final String CREATE_PUNCH = "INSERT INTO event (terminal_id, badge_id, timestamp, event_type_id) VALUES (?, ?, ?, ?)";
+    private static final String FIND_PUNCH = "SELECT * FROM event WHERE id = ?";
     
-    private static final String QUERY_LIST = "SELECT p.*, b.description AS badge_description " + "FROM punch p " + "JOIN badge b ON p.badgeid = b.id " + "WHERE p.badgeid = ? AND DATE(p.timestamp) = ? " + "ORDER BY p.timestamp";
-                                             
     private final DAOFactory daoFactory;
     
     public PunchDAO(DAOFactory daoFactory){
         this.daoFactory = daoFactory;
     }
     
-    public Punch find(int id){
+    public Punch find(int id) {
         Punch punch = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         
-         try (Connection conn = daoFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement(QUERY_FIND)) {
-             
-             ps.setInt(1, id);
-             
-             try (ResultSet rs = ps.executeQuery()){
-                 if (rs.next()){
-                     int terminalId = rs.getInt("terminalid");
-                     String badgeId = rs.getString("badgeid");
-                     String badgeDescription = rs.getString("badge_description");
-                     Timestamp timestamp = rs.getTimestamp("timestamp");
-                     int punchTypeId = rs.getInt("punchtypeid");
-                    
-                     
-                      LocalDateTime originalTimestamp = timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-                     
-                     Badge badge = new Badge(badgeId, badgeDescription);
-                     
-                     EventType punchType = EventType.values()[punchTypeId];
-                     
-                     punch = new Punch(id, terminalId, badge, originalTimestamp, punchType);
-                 }
-             }
-         } catch (SQLException e){
-             throw new RuntimeException("Error finding punch with ID: " + id, e);
-         }
-         
-         return punch;
+        try {
+           Connection conn = daoFactory.getConnection();
+           if (conn.isValid(0)) {
+               ps = conn.prepareStatement(CREATE_PUNCH);
+               ps.setInt(1, id);
+               rs = ps.executeQuery();
+               
+               if (rs.next()) {
+                   int terminalId = rs.getInt("terminalId");
+                   String badgeId = rs.getString("badgeId");
+                   LocalDateTime originalTimestamp = rs.getTimestamp("timestamp").toLocalDateTime();
+                   int eventTypeId = rs.getInt("eventtypeid");
+                   
+                   EventType eventType = switch (eventTypeId) {
+                       case 0 -> EventType.CLOCK_OUT;
+                       case 1 -> EventType.CLOCK_IN;
+                       case 2 -> EventType.TIME_OUT;
+                       default -> throw new IllegalArgumentException("Unknown event type: ");
+                   };
+                   
+                   Badge badge = daoFactory.getBadgeDAO().find(badgeId);
+                   punch = new Punch(id, terminalId, badge, originalTimestamp, eventType);
+               }
+           }
+        } catch (SQLException e){
+            e.printStackTrace();
+        } finally {
+            closeResources(rs, ps);
+        }
+        return punch;
     }
-    
-    public int create (Punch newPunch){
+    public int create(Punch newPunch){
         int generatedId = 0;
         
-        
-        
-        if (!isAuthorized(newPunch)){
-            throw new IllegalArgumentException("Unathorized punch creation attempt for Badge ID: " + newPunch.getBadge().getId());
-        }
-        
-        try(Connection conn = daoFactory.getConnection();
-         PreparedStatement ps = conn.prepareStatement(QUERY_INSERT, Statement.RETURN_GENERATED_KEYS)){
-            ps.setInt(1, newPunch.getTerminalid());
-            ps.setString(2, newPunch.getBadge().getId());
-            ps.setTimestamp(3, Timestamp.valueOf(newPunch.getOriginaltimestamp()));
-            ps.setInt(4, newPunch.getPunchtype().ordinal());
+        try {
+            Connection conn = daoFactory.getConnection();
+            EmployeeDAO employeeDAO = daoFactory.getEmployeeDAO();
+            Badge badge = newPunch.getBadge();
+            Employee employee = employeeDAO.find(badge);
             
-            int affectedRows = ps.executeUpdate();
-            if (affectedRows > 0){
-                try (ResultSet generatedKeys = ps.getGeneratedKeys()){
-                    if (generatedKeys.next()) {
-                        generatedId = generatedKeys.getInt(1);
-                    } else {
-                        throw new SQLException("Creating punch failed, no Id obtained");
+            if (newPunch.getTerminalid() != 0 && employee != null){
+                int departmentTerminalId = employee.getDepartment().getTerminalid();
+                if (newPunch.getTerminalid() != departmentTerminalId){
+                    return generatedId;
+                }
+            }
+            
+            try (PreparedStatement ps = conn.prepareStatement(CREATE_PUNCH, Statement.RETURN_GENERATED_KEYS)){
+                ps.setInt(1, newPunch.getTerminalid());
+                ps.setString(2, badge.getId());
+                ps.setTimestamp(3, Timestamp.valueOf(newPunch.getOriginaltimestamp()));
+                ps.setInt(4, newPunch.getPunchtype().ordinal());
+                
+                int affectedRows = ps.executeUpdate();
+                if (affectedRows > 0) {
+                    try (ResultSet generatedKeys = ps.getGeneratedKeys()){
+                        if (generatedKeys.next()){
+                            generatedId = generatedKeys.getInt(1);
+                        }
                     }
                 }
-            } else {
-                throw new SQLException("Creating punch failed, no rows affected");
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating punch" , e);
+            e.printStackTrace();
         }
+        
         return generatedId;
     }
     
-    public List<Punch> list(Badge badge, LocalDate date){
-        List<Punch> punches = new ArrayList<>();
-        
-        try (Connection conn = daoFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement(QUERY_LIST)) {
-             
-            ps.setString(1, badge.getId());
-            ps.setDate(2, java.sql.Date.valueOf(date));
-             
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    int id = rs.getInt("id");
-                    int terminalId = rs.getInt("terminalid");
-                    String badgeId = rs.getString("badgeid");
-                    String badgeDescription = rs.getString("badge_description");
-                    Timestamp timestamp = rs.getTimestamp("timestamp");
-                    int punchTypeId = rs.getInt("punchtypeid");
-                    
-                    LocalDateTime originalTimestamp = timestamp.toInstant()
-                                        .atZone(ZoneId.systemDefault())
-                                        .toLocalDateTime();
-                    
-                    Badge punchBadge = new Badge(badgeId, badgeDescription);
-                    EventType punchType = EventType.values()[punchTypeId];
-                    
-                    punches.add(new Punch(id, terminalId, punchBadge, originalTimestamp, punchType));
-                }
-            }
-            
-            LocalDate nextDay = date.plusDays(1);
-            try (PreparedStatement nextDayPs = conn.prepareStatement(QUERY_LIST)) {
-                nextDayPs.setString(1, badge.getId());
-                nextDayPs.setDate(2, java.sql.Date.valueOf(nextDay));
-                ResultSet nextDayRs = nextDayPs.executeQuery();
-                
-                if (nextDayRs.next()) {
-                    int terminalId = nextDayRs.getInt("terminalid");
-                    String badgeId = nextDayRs.getString("badgeid");
-                    String badgeDescription = nextDayRs.getString("badge_description");
-                    Timestamp timestamp = nextDayRs.getTimestamp("timestamp");
-                    int punchTypeId = nextDayRs.getInt("punchtypeid");
-                    
-                    // Only add if it's a clock out or time out punch
-                    EventType nextDayPunchType = EventType.values()[punchTypeId];
-                    if (nextDayPunchType == EventType.CLOCK_OUT || nextDayPunchType == EventType.TIME_OUT) {
-                        LocalDateTime originalTimestamp = timestamp.toInstant()
-                                            .atZone(ZoneId.systemDefault())
-                                            .toLocalDateTime();
-                        punches.add(new Punch(-1, terminalId, new Badge(badgeId, badgeDescription), originalTimestamp, nextDayPunchType));
-                    }
-                }
-            }
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error listing punches for badge " + badge.getId() + " on date " + date, e);
+    private void closeResources(ResultSet rs, PreparedStatement ps){
+        try {
+            if(rs != null) rs.close();
+            if(ps != null) ps.close();
+        } catch (SQLException e){
+            e.printStackTrace();
         }
-        
-        return punches;
-        
     }
-    public ArrayList<Punch> list(Badge badge, LocalDate begin, LocalDate end) {
-        ArrayList<Punch> punchesInRange = new ArrayList<>();
-
-        LocalDate currentDate = begin;
-        while (!currentDate.isAfter(end)) {
-            List<Punch> punchesForDay = list(badge, currentDate);
-            punchesInRange.addAll(punchesForDay);
-            currentDate = currentDate.plusDays(1);
-    }
-
-    return punchesInRange;
-}
-
-    
-    private boolean isAuthorized(Punch newPunch){
-        return true;
-    }
-    
 }
