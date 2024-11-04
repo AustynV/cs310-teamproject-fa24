@@ -2,12 +2,11 @@ package edu.jsu.mcis.cs310.tas_fa24.dao;
 
 import edu.jsu.mcis.cs310.tas_fa24.Badge;
 import edu.jsu.mcis.cs310.tas_fa24.Department;
-import java.sql.*;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
+
 /**
  *
  * @author David
@@ -53,7 +52,7 @@ public class DepartmentDAO {
                 int idNum = rs.getInt("id");
                 int termID = rs.getInt("terminalid");
                 
-                result = new Department(Integer.toString(idNum), desc, Integer.toString(termID));
+                result = new Department(idNum, desc, termID);
 
                 }
 
