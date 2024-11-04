@@ -28,7 +28,7 @@ public class ShiftDAO {
                     Map<String, String> parameters = new HashMap<>();
                     
                     parameters.put("id", rs.getString("id"));
-                    
+                    //testing
                     parameters.put("description", rs.getString("description"));
                     parameters.put("shiftstart", rs.getString("shiftstart"));
                     parameters.put("shiftstop", rs.getString("shiftstop"));                    

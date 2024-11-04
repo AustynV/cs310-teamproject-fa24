@@ -28,7 +28,7 @@ public class Shift {
         this.description = parameters.get("description").toString();
         this.startTime = LocalTime.parse(parameters.get("shiftstart"), formatter);
         
-        
+        //testing
         this.stopTime = LocalTime.parse(parameters.get("stopTime"), formatter);
         this.roundInterval = LocalTime.parse(parameters.get("roundinterval"),formatter);
         this.gracePeriod = LocalTime.parse(parameters.get("graceperiod"), formatter);
