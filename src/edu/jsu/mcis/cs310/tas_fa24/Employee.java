@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package edu.jsu.mcis.cs310.tas_fa24;
-
+import edu.jsu.mcis.cs310.tas_fa24.dao.*;
 import java.time.LocalDateTime;
 
 /**
@@ -62,10 +62,12 @@ public class Employee {
     
     @Override
     public String toString(){
-        return String.format("#%d (%s, %s, %s): %s [%s], %s %s",
+        //"ID #14: Donaldson, Kathleen C (#229324A4), Type: Full-Time, Department: Press, Active: 02/02/2017"
+        return String.format("#%d: %s, %s, %s %s (#%s), Type: %s %s, Department: %s, Active: %s",
                 id, lastname, firstname, middlename,
-                badge.getDescription(), badge.getId(), employeetype.toString(),
+                badge.getDescription(), badge.getId(), employeetype.toString(), department.getDescription(),
                 active.toString());
+                
     }
     
 }
