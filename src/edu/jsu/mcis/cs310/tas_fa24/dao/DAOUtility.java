@@ -20,7 +20,7 @@ public final class DAOUtility {
     
     
     // @author: Austyn
-    public static int calculateTotalMinutes(ArrayList<Punch> dailypunchlist, Shift shift){
+    public static int calculateTotalMinutes(List<Punch> dailypunchlist, Shift shift){
         
     int totalMinutes = 0;
     boolean isLunchDeducted = false;

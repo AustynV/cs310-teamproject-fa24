@@ -19,7 +19,7 @@ public class Punch {
     private LocalDateTime originalTimestamp;
     private LocalDateTime adjustedTimestamp;
     private EventType punchType;
-    private PunchAdjustmentType adjustmentType;
+    public static PunchAdjustmentType adjustmentType;
     
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
     

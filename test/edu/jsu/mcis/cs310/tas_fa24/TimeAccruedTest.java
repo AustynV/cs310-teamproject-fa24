@@ -2,9 +2,9 @@ package edu.jsu.mcis.cs310.tas_fa24;
 
 import edu.jsu.mcis.cs310.tas_fa24.dao.*;
 import java.util.ArrayList;
+import java.util.List;
 import org.junit.*;
 import static org.junit.Assert.*;
-import src.edu.jsu.mcis.cs310.tas_fa24.Shift;
 import edu.jsu.mcis.cs310.tas_fa24.Punch;
 
 public class TimeAccruedTest {
@@ -32,7 +32,7 @@ public class TimeAccruedTest {
         
         /* Get/Adjust Punch List */
 
-        ArrayList<Punch> dailypunchlist = punchDAO.list(b, p.getOriginalTimestamp().toLocalDate());
+        List<Punch> dailypunchlist = punchDAO.list(b, p.getOriginaltimestamp().toLocalDate());
 
         for (Punch punch : dailypunchlist) {
             punch.adjust(s);
@@ -62,7 +62,7 @@ public class TimeAccruedTest {
         
         /* Get/Adjust Punch List */
 
-        ArrayList<Punch> dailypunchlist = punchDAO.list(b, p.getOriginalTimestamp().toLocalDate());
+        List<Punch> dailypunchlist = punchDAO.list(b, p.getOriginaltimestamp().toLocalDate());
 
         for (Punch punch : dailypunchlist) {
             punch.adjust(s);
@@ -92,7 +92,7 @@ public class TimeAccruedTest {
         
         /* Get/Adjust Punch List */
 
-        ArrayList<Punch> dailypunchlist = punchDAO.list(b, p.getOriginalTimestamp().toLocalDate());
+        List<Punch> dailypunchlist = punchDAO.list(b, p.getOriginaltimestamp().toLocalDate());
 
         for (Punch punch : dailypunchlist) {
             punch.adjust(s);
@@ -122,7 +122,7 @@ public class TimeAccruedTest {
         
         /* Get/Adjust Punch List */
 
-        ArrayList<Punch> dailypunchlist = punchDAO.list(b, p.getOriginalTimestamp().toLocalDate());
+        List<Punch> dailypunchlist = punchDAO.list(b, p.getOriginaltimestamp().toLocalDate());
 
         for (Punch punch : dailypunchlist) {
             punch.adjust(s);
