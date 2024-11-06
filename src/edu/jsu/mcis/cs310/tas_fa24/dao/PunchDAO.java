@@ -20,7 +20,7 @@ import java.util.Optional;
 
 
 public class PunchDAO {
-    private static final String CREATE_PUNCH = "INSERT INTO event (terminal_id, badge_id, timestamp, event_type_id) VALUES (?, ?, ?, ?)";
+    private static final String CREATE_PUNCH = "INSERT INTO event (terminalid, badgeid, timestamp, eventtypeid) VALUES (?, ?, ?, ?)";
     private static final String FIND_PUNCH = "SELECT * FROM event WHERE id = ?";
     
     private final DAOFactory daoFactory;
@@ -29,42 +29,60 @@ public class PunchDAO {
         this.daoFactory = daoFactory;
     }
     
-    public Punch find(int id) {
+    public Punch find (int id){
         Punch punch = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         
         try {
-           Connection conn = daoFactory.getConnection();
-           if (conn.isValid(0)) {
-               ps = conn.prepareStatement(CREATE_PUNCH);
-               ps.setInt(1, id);
-               rs = ps.executeQuery();
-               
-               if (rs.next()) {
-                   int terminalId = rs.getInt("terminalId");
-                   String badgeId = rs.getString("badgeId");
-                   LocalDateTime originalTimestamp = rs.getTimestamp("timestamp").toLocalDateTime();
-                   int eventTypeId = rs.getInt("eventtypeid");
-                   
-                   EventType eventType = switch (eventTypeId) {
-                       case 0 -> EventType.CLOCK_OUT;
-                       case 1 -> EventType.CLOCK_IN;
-                       case 2 -> EventType.TIME_OUT;
-                       default -> throw new IllegalArgumentException("Unknown event type: ");
-                   };
-                   
-                   Badge badge = daoFactory.getBadgeDAO().find(badgeId);
-                   punch = new Punch(id, terminalId, badge, originalTimestamp, eventType);
-               }
-           }
+            Connection conn = daoFactory.getConnection();
+            
+            if (conn.isValid(0)){
+                ps = conn.prepareStatement(FIND_PUNCH);
+                ps.setInt(1, id);
+                
+                rs = ps.executeQuery();
+                
+                if (rs.next()){
+                    int terminalId = rs.getInt("terminalid");
+                    String badgeId = rs.getString("badgeid");
+                    LocalDateTime originalTimestamp = rs.getTimestamp("timestamp").toLocalDateTime();
+                    int eventTypeId = rs.getInt("eventtypeid");
+                    
+                    EventType eventType = switch (eventTypeId){
+                        case 0 -> EventType.CLOCK_OUT;
+                        case 1 -> EventType.CLOCK_IN;
+                        case 2 -> EventType.TIME_OUT;
+                        default -> throw new IllegalArgumentException("Unkown event type ID: " + eventTypeId);
+                    };
+                    
+                    Badge badge = daoFactory.getBadgeDAO().find(badgeId);
+                    punch = new Punch(id, terminalId, badge, originalTimestamp, eventType);
+                }
+            }
         } catch (SQLException e){
             e.printStackTrace();
         } finally {
-            closeResources(rs, ps);
+            if (rs != null){
+                try {
+                    rs.close();
+                } catch (SQLException e){
+                    e.printStackTrace();
+                }
+            }
+            
+            if (ps != null){
+                try {
+                    ps.close();
+                } catch (SQLException e){
+                    e.printStackTrace();
+                }
+            }
         }
+        
         return punch;
     }
+    
     public int create(Punch newPunch){
         int generatedId = 0;
         
@@ -75,20 +93,20 @@ public class PunchDAO {
             Employee employee = employeeDAO.find(badge);
             
             if (newPunch.getTerminalid() != 0 && employee != null){
-                int departmentTerminalId = employee.getDepartment().getTerminalid();
-                if (newPunch.getTerminalid() != departmentTerminalId){
+                int departmentTerminalid = employee.getDepartment().getTerminalid();
+                if (newPunch.getTerminalid() != departmentTerminalid){
                     return generatedId;
                 }
             }
             
             try (PreparedStatement ps = conn.prepareStatement(CREATE_PUNCH, Statement.RETURN_GENERATED_KEYS)){
                 ps.setInt(1, newPunch.getTerminalid());
-                ps.setString(2, badge.getId());
+                ps.setString(2, newPunch.getBadge().getId());
                 ps.setTimestamp(3, Timestamp.valueOf(newPunch.getOriginaltimestamp()));
                 ps.setInt(4, newPunch.getPunchtype().ordinal());
                 
                 int affectedRows = ps.executeUpdate();
-                if (affectedRows > 0) {
+                if (affectedRows > 0){
                     try (ResultSet generatedKeys = ps.getGeneratedKeys()){
                         if (generatedKeys.next()){
                             generatedId = generatedKeys.getInt(1);
@@ -99,16 +117,6 @@ public class PunchDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
         return generatedId;
-    }
-    
-    private void closeResources(ResultSet rs, PreparedStatement ps){
-        try {
-            if(rs != null) rs.close();
-            if(ps != null) ps.close();
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
     }
 }
