@@ -1,6 +1,7 @@
 package edu.jsu.mcis.cs310.tas_fa24;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -39,7 +40,8 @@ public class Shift {
         this.stopTime = LocalTime.parse(parameters.get("shiftstop"), formatter);
        
         this.roundInterval = Integer.parseInt(shift.get("roundinterval"));
-
+        this.lunchDuration = Integer.parseInt(shift.get("lunchduration"));
+        
 
         this.gracePeriod = Integer.parseInt(shift.get("graceperiod"));
         this.dockPenalty = Integer.parseInt(shift.get("dockpenalty"));;
@@ -50,10 +52,12 @@ public class Shift {
 
          
     }
-        
+    
+    @Override
     public String toString(){
         String result;
-        System.out.println("heeee");
+        int lunchTotal = (lunchStop.toSecondOfDay() - lunchStart.toSecondOfDay()) /60;
+        int shiftTotal = (stopTime.toSecondOfDay() - startTime.toSecondOfDay()) /60;
         //String test = "Shift 1: 07:00 - 15:30 (510 minutes); Lunch: 12:00 - 12:30 (30 minutes)";
         //Shift 1: 07:00 - 15:30 (510 minutes); Lunch: 12:00 - 12:30 (30 minutes)
         
@@ -62,10 +66,10 @@ public class Shift {
         sb.append(description);
         sb.append(": ");
         sb.append(startTime).append(" - ").append(stopTime);
-        sb.append(" (").append("(510 minutes)").append(");");
+        sb.append(" (").append(shiftTotal).append(" minutes);");
         sb.append(" Lunch: ");
         sb.append(lunchStart).append(" - ").append(lunchStop);
-        sb.append(" (").append("(30 minutes)").append(")");
+        sb.append(" (").append(lunchTotal).append(" minutes)");
 
         System.out.println(sb.toString());
         

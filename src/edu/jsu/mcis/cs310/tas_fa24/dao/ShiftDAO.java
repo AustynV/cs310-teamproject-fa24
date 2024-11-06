@@ -3,7 +3,7 @@ import edu.jsu.mcis.cs310.tas_fa24.Shift;
 import edu.jsu.mcis.cs310.tas_fa24.Badge;
 import java.sql.*;
 import java.util.HashMap;
-import java.util.Map;
+
 
 public class ShiftDAO {
     private static final String QUERY_FIND_ID = "SELECT * FROM shift WHERE id = ?";
@@ -17,17 +17,17 @@ public class ShiftDAO {
     public Shift find (int id){
         
         Shift shift = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         
-        try (Connection conn = daoFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement(QUERY_FIND_ID)){
-            
-            ps.setInt(1, id);
-            
-            try (ResultSet rs = ps.executeQuery()){
+        try{Connection conn = daoFactory.getConnection();
+            if(conn.isValid(0)){
+                ps = conn.prepareStatement(QUERY_FIND_ID);
+                ps.setInt(1, id);
                 
-                if (rs.next()){
-                    
-      HashMap<String, String> parameters = new HashMap<>();
+                rs = ps.executeQuery();
+                if(rs.next()){
+                    HashMap<String, String> parameters = new HashMap<>();
 
                     parameters.put("id",rs.getString("id"));
 
@@ -56,7 +56,7 @@ public class ShiftDAO {
                     //parameters.put("shiftDuration", rs.getString("shiftDuration"));
                     //System.out.println(parameters)System.out.println(parameters);
 
-                    shift = new Shift(parameters);                                                                             
+                    shift = new Shift(parameters);
                 }
             }
         } catch (SQLException e){
