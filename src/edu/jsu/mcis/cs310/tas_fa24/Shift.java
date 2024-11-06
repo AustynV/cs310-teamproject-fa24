@@ -25,7 +25,7 @@ public class Shift {
     private final LocalTime lunchStart;
     private final LocalTime lunchStop;
     private final int lunchDuration;
-    //private final int shiftDuration;
+    private int shiftDuration;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");    
 
@@ -58,6 +58,7 @@ public class Shift {
         String result;
         int lunchTotal = (lunchStop.toSecondOfDay() - lunchStart.toSecondOfDay()) /60;
         int shiftTotal = (stopTime.toSecondOfDay() - startTime.toSecondOfDay()) /60;
+        shiftDuration = shiftTotal;
         //String test = "Shift 1: 07:00 - 15:30 (510 minutes); Lunch: 12:00 - 12:30 (30 minutes)";
         //Shift 1: 07:00 - 15:30 (510 minutes); Lunch: 12:00 - 12:30 (30 minutes)
         
@@ -71,10 +72,10 @@ public class Shift {
         sb.append(lunchStart).append(" - ").append(lunchStop);
         sb.append(" (").append(lunchTotal).append(" minutes)");
 
-        System.out.println(sb.toString());
+        
         
         result = sb.toString();
-        System.out.println(result);
+        
         return result;
 
 
@@ -84,7 +85,7 @@ public class Shift {
     
     public LocalTime getStarted(){
 
-        System.out.println("here");
+        
         return startTime;
 
     }
@@ -128,7 +129,8 @@ public class Shift {
     }
     
 
-    public LocalTime getShiftDuration(){
+    public int getShiftDuration(){
+        
         return shiftDuration;
     }
     
