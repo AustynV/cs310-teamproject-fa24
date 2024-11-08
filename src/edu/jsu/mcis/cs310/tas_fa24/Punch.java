@@ -77,7 +77,11 @@ public class Punch {
     public String printOriginal() {
         
         String formattedTimestamp = originalTimestamp.format(FORMATTER);
-        return "#" + badge.getId() + " " + punchType + ": " + formattedTimestamp;
+        
+        String[] parts = formattedTimestamp.split(" ");
+        parts[0] = parts[0].toUpperCase();
+        
+        return "#" + badge.getId() + " " + punchType + ": " + String.join(" ", parts);
         
         //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
         //String formattedTimestamp = originalTimestamp.format(formatter);
