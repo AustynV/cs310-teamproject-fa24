@@ -74,6 +74,30 @@ public class Punch {
         this.adjustedTimestamp = adjustedTimestamp;
     }
     
+    public void adjust (Shift s){
+        LocalDateTime original = this.originalTimestamp;
+        LocalTime punchTime = original.toLocalTime(); 
+        LocalDateTime adjusted = original;
+        
+        if (this.punchType == EventType.TIME_OUT) {
+            return;
+        }
+        
+        if (original.getDayOfWeek() == DayOfWeek.SATURDAY || original.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            return;
+        }
+        
+        LocalTime shiftStart = s.getStarted();
+        LocalTime shiftStop = s.getStopTime();
+        int roundInterval = s.getRoundedInterval();
+        int gracePeriod = s.getGracePeriod();
+        int dockPenalty = s.getDockPenalty();
+        LocalTime lunchStart = s.getLunchStart();
+        LocalTime lunchStop = s.getLunchStop();
+        
+        
+    }
+    
     public String printOriginal() {
         
         String formattedTimestamp = originalTimestamp.format(FORMATTER);
