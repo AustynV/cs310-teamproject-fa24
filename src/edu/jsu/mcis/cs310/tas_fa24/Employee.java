@@ -5,7 +5,7 @@
 package edu.jsu.mcis.cs310.tas_fa24;
 import edu.jsu.mcis.cs310.tas_fa24.dao.*;
 import java.time.LocalDateTime;
-
+import java.time.format.DateTimeFormatter;
 /**
  *
  * @author devi
@@ -63,10 +63,11 @@ public class Employee {
     @Override
     public String toString(){
         //"ID #14: Donaldson, Kathleen C (#229324A4), Type: Full-Time, Department: Press, Active: 02/02/2017"
-        return String.format("#%d: %s, %s, %s %s (#%s), Type: %s %s, Department: %s, Active: %s",
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        return String.format("ID #%d: %s, %s %s (#%s), Type: %s, Department: %s, Active: %s",
                 id, lastname, firstname, middlename,
-                badge.getDescription(), badge.getId(), employeetype.toString(), department.getDescription(),
-                active.toString());
+                 badge.getId(), employeetype, department.getDescription(),
+                active.format(formatter));
                 
     }
     

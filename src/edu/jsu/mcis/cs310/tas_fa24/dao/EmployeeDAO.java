@@ -60,10 +60,10 @@ public class EmployeeDAO {
                     //System.out.println(rs.getInt("shiftid"));
                                                                                  
                     Shift shift = daoFactory.getShiftDAO().find(rs.getInt("shiftid"));
-                    System.out.println("here");
+                    
 
             
-                    EmployeeType employeeType = EmployeeType.values()[rs.getInt("employeetypeid") - 1];
+                    EmployeeType employeeType = EmployeeType.values()[rs.getInt("employeetypeid")];
 
                     // Construct Employee object
 
