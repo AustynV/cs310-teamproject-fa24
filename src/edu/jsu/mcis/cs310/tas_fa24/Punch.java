@@ -78,10 +78,10 @@ public class Punch {
         
         String formattedTimestamp = originalTimestamp.format(FORMATTER);
         
-        String[] parts = formattedTimestamp.split(" ");
-        parts[0] = parts[0].toUpperCase();
+        //out put was M[on] instead of M[ON]
+        formattedTimestamp = formattedTimestamp.toUpperCase(); //this fixes the error
         
-        return "#" + badge.getId() + " " + punchType + ": " + String.join(" ", parts);
+        return "#" + badge.getId() + " " + punchType + ": " + formattedTimestamp;
         
         //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
         //String formattedTimestamp = originalTimestamp.format(formatter);
