@@ -35,7 +35,7 @@ public class BadgeDAO {
 
                 if (hasresults) {
 
-                    rs = ps.getResultSet();
+                    rs = ps.getResultSet(); 
 
                     while (rs.next()) {
 
