@@ -74,29 +74,69 @@ public class Punch {
         this.adjustedTimestamp = adjustedTimestamp;
     }
     
-    public void adjust (Shift s){
-        LocalDateTime original = this.originalTimestamp;
-        LocalTime punchTime = original.toLocalTime(); 
-        LocalDateTime adjusted = original;
+    public void adjust (Shift shift){
+        LocalDateTime punchTime = this.originalTimestamp;
+        LocalTime shiftStart = shift.getStarted();
+        LocalTime shiftStop = shift.getStopTime();
+        LocalTime lunchStart = shift.getLunchStart();
+        LocalTime lunchStop = shift.getLunchStop();
         
-        if (this.punchType == EventType.TIME_OUT) {
-            return;
+        int roundInterval = shift.getRoundedInterval();
+        int gracePeriod = shift.getGracePeriod();
+        int dockPenalty = shift.getDockPenalty();
+
+        // Determine if punch is a clock-in or clock-out type
+        if (punchType == punchType.CLOCK_IN) {
+            if (punchTime.toLocalTime().isBefore(shiftStart.minusMinutes(gracePeriod))) {
+                // Early clock-in, rounded to shift start time
+                adjustedTimestamp = punchTime.with(shiftStart);
+                adjustmentType = "Shift Start";
+            } else if (punchTime.toLocalTime().isBefore(shiftStart.plusMinutes(gracePeriod))) {
+                // Within grace period, round to shift start
+                adjustedTimestamp = punchTime.with(shiftStart);
+                adjustmentType = "Shift Start";
+            } else if (punchTime.toLocalTime().isBefore(shiftStart.plusMinutes(dockPenalty))) {
+                // Within dock penalty, apply dock adjustment
+                adjustedTimestamp = punchTime.with(shiftStart.plusMinutes(dockPenalty));
+                adjustmentType = "Shift Dock";
+            } else if (punchTime.toLocalTime().isBefore(lunchStart)) {
+                // Round clock-in based on interval before lunch
+                adjustedTimestamp = roundToInterval(punchTime, roundInterval);
+                adjustmentType = "Interval Round";
+            } else if (punchTime.toLocalTime().equals(lunchStart)) {
+                adjustedTimestamp = punchTime.with(lunchStart);
+                adjustmentType = "Lunch Start";
+            }
+        } else if (punchType == PunchType.CLOCK_OUT) {
+            if (punchTime.toLocalTime().equals(lunchStop)) {
+                adjustedTimestamp = punchTime.with(lunchStop);
+                adjustmentType = "Lunch Stop";
+            } else if (punchTime.toLocalTime().isAfter(shiftStop)) {
+                // Round clock-out to interval after shift end
+                adjustedTimestamp = roundToInterval(punchTime, roundInterval);
+                adjustmentType = "Interval Round";
+            } else if (punchTime.toLocalTime().isAfter(shiftStop.minusMinutes(gracePeriod))) {
+                // Within grace period for clock-out, round to shift end
+                adjustedTimestamp = punchTime.with(shiftStop);
+                adjustmentType = "Shift Stop";
+            } else {
+                adjustedTimestamp = punchTime;
+                adjustmentType = "None";
+            }
+        } else {
+            // No adjustment for time-out punches
+            adjustedTimestamp = originalTimestamp;
+            adjustmentType = "None";
         }
-        
-        if (original.getDayOfWeek() == DayOfWeek.SATURDAY || original.getDayOfWeek() == DayOfWeek.SUNDAY) {
-            return;
-        }
-        
-        LocalTime shiftStart = s.getStarted();
-        LocalTime shiftStop = s.getStopTime();
-        int roundInterval = s.getRoundedInterval();
-        int gracePeriod = s.getGracePeriod();
-        int dockPenalty = s.getDockPenalty();
-        LocalTime lunchStart = s.getLunchStart();
-        LocalTime lunchStop = s.getLunchStop();
-        
-        
     }
+    
+    private LocalDateTime roundToInterval(LocalDateTime timestamp, int interval) {
+        long minutes = timestamp.getMinute();
+        long roundedMinutes = (minutes / interval) * interval;
+        return timestamp.truncatedTo(ChronoUnit.HOURS).plusMinutes(roundedMinutes);
+    }
+    
+    
     
     public String printOriginal() {
         
@@ -136,14 +176,6 @@ public class Punch {
     
      public String toString() {
         return printOriginal();
-    }
-     
-    public void adjust (Shift s){
-        
-        LocalDateTime original = originalTimestamp;
-        DayOfWeek day = original.getDayOfWeek();
-        
-        
     }
     
 }
