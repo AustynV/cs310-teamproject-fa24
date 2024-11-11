@@ -10,8 +10,10 @@ import edu.jsu.mcis.cs310.tas_fa24.EventType;
 import edu.jsu.mcis.cs310.tas_fa24.Employee;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 
 public class PunchDAO {
     private static final String CREATE_PUNCH = "INSERT INTO event (terminalid, badgeid, timestamp, eventtypeid) VALUES (?, ?, ?, ?)";
@@ -106,5 +108,16 @@ public class PunchDAO {
             }
         }
         return generatedId;
+    }
+    public ArrayList<Punch> list(Badge badge, LocalDate begin, LocalDate end) {
+        ArrayList<Punch> punchesInRange = new ArrayList<>();
+        LocalDate currentDate = begin;
+        while (!currentDate.isAfter(end)) {
+            List<Punch> punchesForDay = list(badge, currentDate);
+            punchesInRange.addAll(punchesForDay);
+            currentDate = currentDate.plusDays(1);
+    }
+    return punchesInRange;
+      
     }
 }
