@@ -29,7 +29,7 @@ public final class DAOFactory {
 
     }
 
-    Connection getConnection() {
+    public Connection getConnection() {
         return conn;
     }
 

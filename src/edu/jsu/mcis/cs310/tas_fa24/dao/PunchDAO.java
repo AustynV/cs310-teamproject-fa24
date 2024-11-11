@@ -2,6 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+
+
 package edu.jsu.mcis.cs310.tas_fa24.dao;
 
 import edu.jsu.mcis.cs310.tas_fa24.Punch;
@@ -10,12 +12,15 @@ import edu.jsu.mcis.cs310.tas_fa24.EventType;
 import edu.jsu.mcis.cs310.tas_fa24.Employee;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PunchDAO {
     private static final String CREATE_PUNCH = "INSERT INTO event (terminalid, badgeid, timestamp, eventtypeid) VALUES (?, ?, ?, ?)";
     private static final String FIND_PUNCH = "SELECT * FROM event WHERE id = ?";
+    private static final String FIND_PUNCHES_BY_BADGE_AND_DATE = "SELECT * FROM event WHERE badgeid = ? AND DATE(timestamp) = ? ORDER BY timestamp";
 
     private final DAOFactory daoFactory;
 
@@ -107,4 +112,85 @@ public class PunchDAO {
         }
         return generatedId;
     }
+
+    @SuppressWarnings("resource")
+	public List<Punch> list(Badge badge, LocalDate date) {
+        List<Punch> punchList = new ArrayList<>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            Connection conn = daoFactory.getConnection();
+            if (conn.isValid(0)) {
+                // Retrieve punches for the specified badge and date
+                ps = conn.prepareStatement(FIND_PUNCHES_BY_BADGE_AND_DATE);
+                ps.setString(1, badge.getId());
+                ps.setDate(2, Date.valueOf(date));
+
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    int terminalId = rs.getInt("terminalid");
+                    LocalDateTime timestamp = rs.getTimestamp("timestamp").toLocalDateTime();
+                    int eventTypeId = rs.getInt("eventtypeid");
+
+                    EventType eventType = switch (eventTypeId) {
+                        case 0 -> EventType.CLOCK_OUT;
+                        case 1 -> EventType.CLOCK_IN;
+                        case 2 -> EventType.TIME_OUT;
+                        default -> throw new IllegalArgumentException("Unknown event type ID: " + eventTypeId);
+                    };
+
+                    Punch punch = new Punch(id, terminalId, badge, timestamp, eventType);
+                    punchList.add(punch);
+                }
+
+                // Optional: Retrieve the first punch of the next day if it's a CLOCK_OUT or TIME_OUT
+                LocalDate nextDay = date.plusDays(1);
+                ps = conn.prepareStatement(FIND_PUNCHES_BY_BADGE_AND_DATE);
+                ps.setString(1, badge.getId());
+                ps.setDate(2, Date.valueOf(nextDay));
+
+                rs = ps.executeQuery();
+                if (rs.next()) {
+                    int id = rs.getInt("id");
+                    int terminalId = rs.getInt("terminalid");
+                    LocalDateTime timestamp = rs.getTimestamp("timestamp").toLocalDateTime();
+                    int eventTypeId = rs.getInt("eventtypeid");
+
+                    EventType eventType = switch (eventTypeId) {
+                        case 0 -> EventType.CLOCK_OUT;
+                        case 1 -> EventType.CLOCK_IN;
+                        case 2 -> EventType.TIME_OUT;
+                        default -> throw new IllegalArgumentException("Unknown event type ID: " + eventTypeId);
+                    };
+
+                    Punch punch = new Punch(id, terminalId, badge, timestamp, eventType);
+                    if (eventType == EventType.CLOCK_OUT || eventType == EventType.TIME_OUT) {
+                        punchList.add(punch);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return punchList;
+    }
 }
+
