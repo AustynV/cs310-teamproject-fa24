@@ -74,68 +74,114 @@ public class Punch {
         this.adjustedTimestamp = adjustedTimestamp;
     }
     
-    public void adjust (Shift shift){
-        LocalDateTime punchTime = this.originalTimestamp;
-        LocalTime shiftStart = shift.getStarted();
-        LocalTime shiftStop = shift.getStopTime();
-        LocalTime lunchStart = shift.getLunchStart();
-        LocalTime lunchStop = shift.getLunchStop();
-        
-        int roundInterval = shift.getRoundedInterval();
-        int gracePeriod = shift.getGracePeriod();
-        int dockPenalty = shift.getDockPenalty();
-
-        // Determine if punch is a clock-in or clock-out type
-        if (punchType == punchType.CLOCK_IN) {
-            if (punchTime.toLocalTime().isBefore(shiftStart.minusMinutes(gracePeriod))) {
-                // Early clock-in, rounded to shift start time
-                adjustedTimestamp = punchTime.with(shiftStart);
-                adjustmentType = "Shift Start";
-            } else if (punchTime.toLocalTime().isBefore(shiftStart.plusMinutes(gracePeriod))) {
-                // Within grace period, round to shift start
-                adjustedTimestamp = punchTime.with(shiftStart);
-                adjustmentType = "Shift Start";
-            } else if (punchTime.toLocalTime().isBefore(shiftStart.plusMinutes(dockPenalty))) {
-                // Within dock penalty, apply dock adjustment
-                adjustedTimestamp = punchTime.with(shiftStart.plusMinutes(dockPenalty));
-                adjustmentType = "Shift Dock";
-            } else if (punchTime.toLocalTime().isBefore(lunchStart)) {
-                // Round clock-in based on interval before lunch
-                adjustedTimestamp = roundToInterval(punchTime, roundInterval);
-                adjustmentType = "Interval Round";
-            } else if (punchTime.toLocalTime().equals(lunchStart)) {
-                adjustedTimestamp = punchTime.with(lunchStart);
-                adjustmentType = "Lunch Start";
-            }
-        } else if (punchType == PunchType.CLOCK_OUT) {
-            if (punchTime.toLocalTime().equals(lunchStop)) {
-                adjustedTimestamp = punchTime.with(lunchStop);
-                adjustmentType = "Lunch Stop";
-            } else if (punchTime.toLocalTime().isAfter(shiftStop)) {
-                // Round clock-out to interval after shift end
-                adjustedTimestamp = roundToInterval(punchTime, roundInterval);
-                adjustmentType = "Interval Round";
-            } else if (punchTime.toLocalTime().isAfter(shiftStop.minusMinutes(gracePeriod))) {
-                // Within grace period for clock-out, round to shift end
-                adjustedTimestamp = punchTime.with(shiftStop);
-                adjustmentType = "Shift Stop";
-            } else {
-                adjustedTimestamp = punchTime;
-                adjustmentType = "None";
-            }
-        } else {
-            // No adjustment for time-out punches
+    public void adjust (Shift s){
+        if (punchType == EventType.TIME_OUT || isWeekend(originalTimestamp)) {
             adjustedTimestamp = originalTimestamp;
-            adjustmentType = "None";
+            adjustmentType = PunchAdjustmentType.NONE;
+            return;
         }
+        
+        LocalTime shiftStart = s.getStarted();
+        LocalTime shiftStop = s.getStopTime();
+        LocalTime lunchStart = s.getLunchStart();
+        LocalTime lunchStop = s.getLunchStop();
+        int roundInterval = s.getRoundedInterval();
+        int gracePeriod = s.getGracePeriod();
+        int dockPenalty = s.getDockPenalty();
+        
+        LocalDateTime shiftStartTime = originalTimestamp.with(shiftStart);
+        LocalDateTime shiftStopTime = originalTimestamp.with(shiftStop);
+        LocalDateTime lunchStartTime = originalTimestamp.with(lunchStart);
+        LocalDateTime lunchStopTime = originalTimestamp.with(lunchStop);
+        
+         // Shift Start and Stop adjustment
+        if (isClockIn() && originalTimestamp.isBefore(shiftStartTime) &&
+            originalTimestamp.isAfter(shiftStartTime.minusMinutes(roundInterval))) {
+            adjustedTimestamp = shiftStartTime;
+            adjustmentType = PunchAdjustmentType.SHIFT_START;
+            return;
+        }
+        if (isClockOut() && originalTimestamp.isAfter(shiftStopTime) &&
+            originalTimestamp.isBefore(shiftStopTime.plusMinutes(roundInterval))) {
+            adjustedTimestamp = shiftStopTime;
+            adjustmentType = PunchAdjustmentType.SHIFT_STOP;
+            return;
+        }
+        
+        //Lunch start and stop adjustments 
+        if (isClockOut() && isWithinLunchBreak(originalTimestamp, lunchStartTime, lunchStopTime)) {
+            adjustedTimestamp = lunchStartTime;
+            adjustmentType = PunchAdjustmentType.LUNCH_START;
+            return;
+        }
+        if (isClockIn() && isWithinLunchBreak(originalTimestamp, lunchStartTime, lunchStopTime)) {
+            adjustedTimestamp = lunchStopTime;
+            adjustmentType = PunchAdjustmentType.LUNCH_STOP;
+            return;
+        }
+        
+        //Grace Period adjustment
+        if (isClockIn() && originalTimestamp.isAfter(shiftStartTime) &&
+            originalTimestamp.isBefore(shiftStartTime.plusMinutes(gracePeriod))) {
+            adjustedTimestamp = shiftStartTime;
+            adjustmentType = PunchAdjustmentType.SHIFT_START;
+            return;
+        }
+        if (isClockOut() && originalTimestamp.isBefore(shiftStopTime) &&
+            originalTimestamp.isAfter(shiftStopTime.minusMinutes(gracePeriod))) {
+            adjustedTimestamp = shiftStopTime;
+            adjustmentType = PunchAdjustmentType.SHIFT_STOP;
+            return;
+        }
+        
+        //Dock Penalty adjustment
+        if (isClockIn() && originalTimestamp.isAfter(shiftStartTime.plusMinutes(gracePeriod)) &&
+            originalTimestamp.isBefore(shiftStartTime.plusMinutes(dockPenalty))) {
+            adjustedTimestamp = shiftStartTime.plusMinutes(dockPenalty);
+            adjustmentType = PunchAdjustmentType.SHIFT_DOCK;
+            return;
+        }
+        if (isClockOut() && originalTimestamp.isBefore(shiftStopTime.minusMinutes(gracePeriod)) &&
+            originalTimestamp.isAfter(shiftStopTime.minusMinutes(dockPenalty))) {
+            adjustedTimestamp = shiftStopTime.minusMinutes(dockPenalty);
+            adjustmentType = PunchAdjustmentType.SHIFT_DOCK;
+            return;
+        }
+        
+        adjustedTimestamp = roundToNearestInterval(originalTimestamp, roundInterval);
+        adjustmentType = PunchAdjustmentType.INTERVAL_ROUND;
     }
     
-    private LocalDateTime roundToInterval(LocalDateTime timestamp, int interval) {
-        long minutes = timestamp.getMinute();
-        long roundedMinutes = (minutes / interval) * interval;
-        return timestamp.truncatedTo(ChronoUnit.HOURS).plusMinutes(roundedMinutes);
+    private boolean isClockIn() {
+        return punchType == EventType.CLOCK_IN;
+    }
+
+    private boolean isClockOut() {
+        return punchType == EventType.CLOCK_OUT;
+    }
+
+    private boolean isWeekend(LocalDateTime timestamp) {
+        int dayOfWeek = timestamp.getDayOfWeek().getValue();
+        return dayOfWeek == 6 || dayOfWeek == 7; // Saturday = 6, Sunday = 7
     }
     
+    private boolean isWithinLunchBreak(LocalDateTime timestamp, LocalDateTime lunchStart, LocalDateTime lunchStop) {
+        return !timestamp.isBefore(lunchStart) && !timestamp.isAfter(lunchStop);
+    }
+
+    private LocalDateTime roundToNearestInterval(LocalDateTime timestamp, int intervalMinutes) {
+        LocalDateTime roundedTimestamp = timestamp.truncatedTo(ChronoUnit.MINUTES);
+        int minutes = roundedTimestamp.getMinute();
+        int remainder = minutes % intervalMinutes;
+        
+        if (remainder >= intervalMinutes / 2) {
+            roundedTimestamp = roundedTimestamp.plusMinutes(intervalMinutes - remainder);
+        } else {
+            roundedTimestamp = roundedTimestamp.minusMinutes(remainder);
+        }
+
+        return roundedTimestamp.withSecond(0).withNano(0);
+    }
     
     
     public String printOriginal() {
