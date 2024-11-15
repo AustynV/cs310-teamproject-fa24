@@ -2,9 +2,12 @@ package edu.jsu.mcis.cs310.tas_fa24.dao;
 
 import java.time.*;
 import java.util.*;
+
 import java.time.temporal.ChronoUnit;
 import java.time.format.DateTimeFormatter;
 //import com.github.cliftonlabs.json_simple.*;
+import com.github.cliftonlabs.json_simple.JsonArray;
+import com.github.cliftonlabs.json_simple.JsonObject;
 import edu.jsu.mcis.cs310.tas_fa24.Punch;
 import edu.jsu.mcis.cs310.tas_fa24.PunchAdjustmentType;
 import edu.jsu.mcis.cs310.tas_fa24.Shift;
@@ -55,4 +58,25 @@ public final class DAOUtility {
     return totalMinutes;
     
     }
+
+//Converts a list of punch to a JSON string
+
+public static String getPunchListAsJSON(List<Punch> punchList) {
+	JsonArray jsonArray = new JsonArray();
+	for(Punch punch : punchList) {
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.put("id",punch.getId());
+		jsonObject.put("terminalId", punch.getTerminalid());
+		jsonObject.put("badgeId", punch.getBadge().getId());
+		jsonObject.put("originalTimestamp", punch.getOriginaltimestamp().toString());
+        jsonObject.put("adjustedTimestamp", punch.getAdjustedTimestamp() != null ? punch.getAdjustedTimestamp().toString() : null);
+        jsonObject.put("punchType", punch.getPunchtype().toString());
+        jsonObject.put("adjustmentType", punch.adjustmentType != null ? punch.adjustmentType.toString() : "NONE");
+
+       jsonArray.add(jsonObject);
+    }
+
+    return jsonArray.toString();
 }
+
+	}
