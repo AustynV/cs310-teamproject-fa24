@@ -49,8 +49,9 @@ public class PunchDAO {
                         case 1 -> EventType.CLOCK_IN;
                         case 2 -> EventType.TIME_OUT;
                         default -> throw new IllegalArgumentException("Unknown event type ID: " + eventTypeId);
+                        
                     };
-
+                    
                     Badge badge = daoFactory.getBadgeDAO().find(badgeId);
                     punch = new Punch(id, terminalId, badge, originalTimestamp, eventType);
                 }
@@ -88,7 +89,7 @@ public class PunchDAO {
             ps.setString(2, newPunch.getBadge().getId());
             ps.setTimestamp(3, Timestamp.valueOf(newPunch.getOriginaltimestamp()));
             ps.setInt(4, newPunch.getPunchtype().ordinal());
-
+            
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
